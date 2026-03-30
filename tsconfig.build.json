@@ -1,0 +1,30 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2021",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "allowImportingTsExtensions": false,
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "noImplicitAny": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noEmit": false,
+    "declaration": false,
+    "sourceMap": true,
+    "outDir": "./dist"
+  },
+  "include": [
+    "app.module.ts",
+    "main.ts",
+    "auth/**/*.ts",
+    "chat/**/*.ts",
+    "donors/**/*.ts",
+    "requests/**/*.ts",
+    "users/**/*.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}

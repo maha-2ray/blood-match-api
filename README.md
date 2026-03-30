@@ -19,3 +19,21 @@ When updating dependencies:
 
 - Run `npm audit` after upgrades.
 - Keep or adjust these overrides only if upstream dependencies already include patched versions.
+
+## Run With Docker
+
+1. Review `.env.docker` and change any secrets.
+2. Build and start services:
+
+```bash
+docker compose up --build
+```
+
+3. Access the API at `http://localhost:3000`.
+4. Access Swagger at `http://localhost:3000/api`.
+
+To stop services:
+
+```bash
+docker compose down
+```

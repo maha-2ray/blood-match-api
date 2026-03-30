@@ -5,12 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "start": "node dist/main.js",
+    "build": "tsc -p tsconfig.build.json",
     "preview": "vite preview",
-    "audit:check": "npm audit --json"
+    "audit:check": "npm audit --json",
+    "start:dev": "nest start --watch"
   },
   "dependencies": {
-    "@nestjs/cli": "^11.0.16",
     "@nestjs/common": "^11.1.17",
     "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.1.17",
@@ -39,6 +40,7 @@
     "typeorm": "^0.3.28"
   },
   "devDependencies": {
+    "@nestjs/cli": "^11.0.16",
     "@tailwindcss/vite": "4.1.17",
     "@types/node": "^22.0.0",
     "@types/react": "19.2.7",

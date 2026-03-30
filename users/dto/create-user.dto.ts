@@ -1,5 +1,13 @@
-import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString, MinLength, IsEnum, IsOptional } from 'class-validator';
-import { UserRole } from '../user.entity';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsPhoneNumber,
+  IsString,
+  MinLength,
+  IsEnum,
+  IsOptional,
+} from "class-validator";
+import { UserRole } from "../user.entity";
 
 export class CreateUserDto {
   @IsEmail()
@@ -19,7 +27,7 @@ export class CreateUserDto {
   @IsNotEmpty()
   lastName: string;
 
-  @IsPhoneNumber('ZZ')
+  @IsPhoneNumber()
   @IsNotEmpty()
   phone: string;
 
