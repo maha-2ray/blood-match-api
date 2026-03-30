@@ -1,22 +1,29 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToOne } from 'typeorm';
-import { Donor } from '../donors/donor.entity';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToOne,
+} from "typeorm";
+import { Donor } from "../donors/donor.entity";
 
 export enum UserRole {
-  DONOR = 'donor',
-  REQUESTER = 'requester',
-  ADMIN = 'admin',
+  DONOR = "donor",
+  REQUESTER = "requester",
+  ADMIN = "admin",
 }
 
-@Entity('users')
+@Entity("users")
 export class User {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   email?: string;
 
-  @Column()
-  password!: string;
+  @Column({ nullable: true })
+  password?: string;
 
   @Column()
   fullName!: string;
@@ -25,7 +32,7 @@ export class User {
   phone!: string;
 
   @Column({
-    type: 'enum',
+    type: "enum",
     enum: UserRole,
     default: UserRole.DONOR,
   })
@@ -34,7 +41,10 @@ export class User {
   @Column({ default: true })
   isActive!: boolean;
 
-  @OneToOne(() => Donor, donor => donor.user)
+  @Column({ type: "timestamp", nullable: true })
+  phoneVerifiedAt?: Date;
+
+  @OneToOne(() => Donor, (donor) => donor.user)
   donorProfile!: Donor;
 
   @CreateDateColumn()
