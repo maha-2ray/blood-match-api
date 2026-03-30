@@ -1,0 +1,97 @@
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, OneToMany } from 'typeorm';
+import { User } from '../users/user.entity';
+import { BloodRequest } from '../requests/request.entity';
+
+export enum BloodType {
+  A_POSITIVE = 'A+',
+  A_NEGATIVE = 'A-',
+  B_POSITIVE = 'B+',
+  B_NEGATIVE = 'B-',
+  AB_POSITIVE = 'AB+',
+  AB_NEGATIVE = 'AB-',
+  O_POSITIVE = 'O+',
+  O_NEGATIVE = 'O-',
+}
+
+export enum AvailabilityStatus {
+  AVAILABLE = 'available',
+  BUSY = 'busy',
+  UNAVAILABLE = 'unavailable',
+}
+
+@Entity('donors')
+export class Donor {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @OneToOne(() => User, { onDelete: 'CASCADE' })
+  @JoinColumn()
+  user: User;
+
+  @Column()
+  userId: string;
+
+  @Column({
+    type: 'enum',
+    enum: BloodType,
+  })
+  bloodType: BloodType;
+
+  @Column({
+    type: 'enum',
+    enum: AvailabilityStatus,
+    default: AvailabilityStatus.AVAILABLE,
+  })
+  availabilityStatus: AvailabilityStatus;
+
+  @Column({ type: 'float', nullable: true })
+  latitude: number;
+
+  @Column({ type: 'float', nullable: true })
+  longitude: number;
+
+  @Column({ nullable: true })
+  address: string;
+
+  @Column({ nullable: true })
+  city: string;
+
+  @Column({ nullable: true })
+  state: string;
+
+  @Column({ nullable: true })
+  country: string;
+
+  @Column({ nullable: true })
+  dateOfBirth: Date;
+
+  @Column({ nullable: true })
+  gender: string;
+
+  @Column({ default: 0 })
+  donationsCount: number;
+
+  @Column({ nullable: true })
+  lastDonationDate: Date;
+
+  @Column({ default: true })
+  canDonatePlatelets: boolean;
+
+  @Column({ default: true })
+  canDonatePlasma: boolean;
+
+  @Column({ default: true })
+  canDonateRedCells: boolean;
+
+  @Column({ type: 'text', nullable: true })
+  medicalNotes: string;
+
+  @OneToMany(() => BloodRequest, request => request.donor)
+  requests: BloodRequest[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+}

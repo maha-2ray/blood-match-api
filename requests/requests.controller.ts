@@ -1,0 +1,102 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query } from '@nestjs/common';
+import { RequestsService } from './requests.service';
+import { CreateRequestDto } from './dto/create-request.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ApiTags, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { RequestStatus } from './request.entity';
+
+@ApiTags('requests')
+@Controller('requests')
+export class RequestsController {
+  constructor(private readonly requestsService: RequestsService) {}
+
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  create(@Request() req, @Body() createRequestDto: CreateRequestDto) {
+    return this.requestsService.create(req.user.id, createRequestDto);
+  }
+
+  @Get()
+  @ApiQuery({ name: 'status', enum: RequestStatus, required: false })
+  @ApiQuery({ name: 'bloodType', required: false })
+  @ApiQuery({ name: 'requesterId', required: false })
+  @ApiQuery({ name: 'donorId', required: false })
+  @ApiQuery({ name: 'isUrgent', required: false })
+  findAll(
+    @Query('status') status?: RequestStatus,
+    @Query('bloodType') bloodType?: string,
+    @Query('requesterId') requesterId?: string,
+    @Query('donorId') donorId?: string,
+    @Query('isUrgent') isUrgent?: string,
+  ) {
+    return this.requestsService.findAll(
+      status,
+      bloodType,
+      requesterId,
+      donorId,
+      isUrgent === 'true',
+    );
+  }
+
+  @Get('my')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  getMyRequests(@Request() req) {
+    return this.requestsService.findAll(undefined, undefined, req.user.id, undefined, undefined);
+  }
+
+  @Get('my-donations')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  getMyDonations(@Request() req) {
+    return this.requestsService.findAll(undefined, undefined, undefined, req.user.id, undefined);
+  }
+
+  @Get('stats')
+  getStats() {
+    return this.requestsService.getStats();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.requestsService.findOne(id);
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  update(@Param('id') id: string, @Body() updateData: Partial<any>, @Request() req) {
+    return this.requestsService.update(id, updateData, req.user.id);
+  }
+
+  @Patch(':id/status')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  updateStatus(
+    @Param('id') id: string,
+    @Body('status') status: RequestStatus,
+    @Body('rejectionReason') rejectionReason: string,
+    @Request() req,
+  ) {
+    return this.requestsService.updateStatus(id, status, req.user.id, rejectionReason);
+  }
+
+  @Patch(':id/assign-donor')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  assignDonor(
+    @Param('id') id: string,
+    @Body('donorId') donorId: string,
+    @Request() req,
+  ) {
+    return this.requestsService.assignDonor(id, donorId, req.user.id);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  remove(@Param('id') id: string, @Request() req) {
+    return this.requestsService.remove(id, req.user.id);
+  }
+}
