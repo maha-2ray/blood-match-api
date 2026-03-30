@@ -6,87 +6,84 @@ export enum RequestStatus {
   PENDING = 'pending',
   ACCEPTED = 'accepted',
   REJECTED = 'rejected',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
 }
 
-export enum RequestType {
-  BLOOD = 'blood',
-  PLATELETS = 'platelets',
-  PLASMA = 'plasma',
-  RED_CELLS = 'red_cells',
+export enum UrgencyType {
+  CRITICAL = 'critical',
+  MODERATE = 'moderate',
+  HIGH = 'high',
+  LOW = 'low',
 }
 
 @Entity('blood_requests')
 export class BloodRequest {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
-  requester: User;
+  requester!: User;
 
   @Column()
-  requesterId: string;
+  requesterId!: string;
 
   @ManyToOne(() => Donor, { onDelete: 'CASCADE', nullable: true })
-  donor: Donor;
+  donor!: Donor;
 
   @Column({ nullable: true })
-  donorId: string;
+  donorId!: string;
 
   @Column({
     type: 'enum',
-    enum: RequestType,
-    default: RequestType.BLOOD,
+    enum: UrgencyType,
   })
-  type: RequestType;
+  type!: UrgencyType;
 
   @Column()
-  bloodType: string;
+  bloodType!: string;
 
   @Column({ type: 'int', default: 1 })
-  unitsNeeded: number;
+  unitsNeeded!: number;
 
   @Column({
     type: 'enum',
     enum: RequestStatus,
     default: RequestStatus.PENDING,
   })
-  status: RequestStatus;
+  status!: RequestStatus;
 
   @Column()
-  patientName: string;
+  patientName!: string;
 
   @Column({ nullable: true })
-  patientAge: number;
+  patientAge!: number;
 
   @Column()
-  hospitalName: string;
+  hospitalName!: string;
 
   @Column()
-  hospitalAddress: string;
+  hospitalAddress!: string;
 
   @Column({ type: 'float', nullable: true })
-  hospitalLatitude: number;
+  hospitalLatitude!: number;
 
   @Column({ type: 'float', nullable: true })
-  hospitalLongitude: number;
+  hospitalLongitude!: number;
 
   @Column({ type: 'timestamp' })
-  requiredBy: Date;
+  requiredBy!: Date;
 
   @Column({ type: 'text', nullable: true })
-  notes: string;
+  notes!: string;
 
   @Column({ default: false })
-  isUrgent: boolean;
+  isUrgent!: boolean;
 
   @Column({ type: 'text', nullable: true })
-  rejectionReason: string;
+  rejectionReason!: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

@@ -1,8 +1,12 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Donor, AvailabilityStatus, BloodType } from './donor.entity';
-import { CreateDonorDto } from './dto/create-donor.dto';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { Donor, AvailabilityStatus, BloodType } from "./donor.entity";
+import { CreateDonorDto } from "./dto/create-donor.dto";
 
 @Injectable()
 export class DonorsService {
@@ -17,7 +21,7 @@ export class DonorsService {
     });
 
     if (existingDonor) {
-      throw new ConflictException('Donor profile already exists for this user');
+      throw new ConflictException("Donor profile already exists for this user");
     }
 
     const donor = this.donorsRepository.create({
@@ -34,43 +38,47 @@ export class DonorsService {
     city?: string,
     country?: string,
   ): Promise<Donor[]> {
-    const query = this.donorsRepository.createQueryBuilder('donor')
-      .leftJoinAndSelect('donor.user', 'user')
+    const query = this.donorsRepository
+      .createQueryBuilder("donor")
+      .leftJoinAndSelect("donor.user", "user")
       .select([
-        'donor.id',
-        'donor.bloodType',
-        'donor.availabilityStatus',
-        'donor.latitude',
-        'donor.longitude',
-        'donor.address',
-        'donor.city',
-        'donor.country',
-        'donor.donationsCount',
-        'donor.lastDonationDate',
-        'donor.canDonatePlatelets',
-        'donor.canDonatePlasma',
-        'donor.canDonateRedCells',
-        'user.id',
-        'user.firstName',
-        'user.lastName',
-        'user.phone',
-        'user.email',
+        "donor.id",
+        "donor.bloodType",
+        "donor.availabilityStatus",
+        "donor.latitude",
+        "donor.longitude",
+        "donor.address",
+        "donor.city",
+        "donor.country",
+        "donor.donationsCount",
+        "donor.lastDonationDate",
+        "donor.canDonatePlatelets",
+        "donor.canDonatePlasma",
+        "donor.canDonateRedCells",
+        "user.id",
+        "user.fullName",
+        "user.phone",
+        "user.email",
       ]);
 
     if (bloodType) {
-      query.andWhere('donor.bloodType = :bloodType', { bloodType });
+      query.andWhere("donor.bloodType = :bloodType", { bloodType });
     }
 
     if (availabilityStatus) {
-      query.andWhere('donor.availabilityStatus = :availabilityStatus', { availabilityStatus });
+      query.andWhere("donor.availabilityStatus = :availabilityStatus", {
+        availabilityStatus,
+      });
     }
 
     if (city) {
-      query.andWhere('donor.city ILIKE :city', { city: `%${city}%` });
+      query.andWhere("donor.city ILIKE :city", { city: `%${city}%` });
     }
 
     if (country) {
-      query.andWhere('donor.country ILIKE :country', { country: `%${country}%` });
+      query.andWhere("donor.country ILIKE :country", {
+        country: `%${country}%`,
+      });
     }
 
     return query.getMany();
@@ -79,12 +87,11 @@ export class DonorsService {
   async findOne(id: string): Promise<Donor> {
     const donor = await this.donorsRepository.findOne({
       where: { id },
-      relations: ['user'],
+      relations: ["user"],
       select: {
         user: {
           id: true,
-          firstName: true,
-          lastName: true,
+          fullName: true,
           phone: true,
           email: true,
         },
@@ -92,7 +99,7 @@ export class DonorsService {
     });
 
     if (!donor) {
-      throw new NotFoundException('Donor not found');
+      throw new NotFoundException("Donor not found");
     }
 
     return donor;
@@ -101,11 +108,11 @@ export class DonorsService {
   async findByUserId(userId: string): Promise<Donor> {
     const donor = await this.donorsRepository.findOne({
       where: { userId },
-      relations: ['user'],
+      relations: ["user"],
     });
 
     if (!donor) {
-      throw new NotFoundException('Donor profile not found');
+      throw new NotFoundException("Donor profile not found");
     }
 
     return donor;
@@ -117,13 +124,20 @@ export class DonorsService {
     return this.donorsRepository.save(donor);
   }
 
-  async updateAvailability(userId: string, status: AvailabilityStatus): Promise<Donor> {
+  async updateAvailability(
+    userId: string,
+    status: AvailabilityStatus,
+  ): Promise<Donor> {
     const donor = await this.findByUserId(userId);
     donor.availabilityStatus = status;
     return this.donorsRepository.save(donor);
   }
 
-  async updateLocation(userId: string, latitude: number, longitude: number): Promise<Donor> {
+  async updateLocation(
+    userId: string,
+    latitude: number,
+    longitude: number,
+  ): Promise<Donor> {
     const donor = await this.findByUserId(userId);
     donor.latitude = latitude;
     donor.longitude = longitude;
@@ -140,34 +154,39 @@ export class DonorsService {
   async remove(id: string): Promise<void> {
     const result = await this.donorsRepository.delete(id);
     if (result.affected === 0) {
-      throw new NotFoundException('Donor not found');
+      throw new NotFoundException("Donor not found");
     }
   }
 
-  async findNearby(latitude: number, longitude: number, radius: number = 10): Promise<Donor[]> {
+  async findNearby(
+    latitude: number,
+    longitude: number,
+    radius: number = 10,
+  ): Promise<Donor[]> {
     const donors = await this.donorsRepository
-      .createQueryBuilder('donor')
-      .leftJoinAndSelect('donor.user', 'user')
+      .createQueryBuilder("donor")
+      .leftJoinAndSelect("donor.user", "user")
       .select([
-        'donor.id',
-        'donor.bloodType',
-        'donor.availabilityStatus',
-        'donor.latitude',
-        'donor.longitude',
-        'donor.city',
-        'donor.country',
-        'donor.donationsCount',
-        'user.id',
-        'user.firstName',
-        'user.lastName',
-        'user.phone',
+        "donor.id",
+        "donor.bloodType",
+        "donor.availabilityStatus",
+        "donor.latitude",
+        "donor.longitude",
+        "donor.city",
+        "donor.country",
+        "donor.donationsCount",
+        "user.id",
+        "user.fullName",
+        "user.phone",
       ])
-      .where('donor.latitude IS NOT NULL')
-      .andWhere('donor.longitude IS NOT NULL')
-      .andWhere('donor.availabilityStatus = :status', { status: AvailabilityStatus.AVAILABLE })
+      .where("donor.latitude IS NOT NULL")
+      .andWhere("donor.longitude IS NOT NULL")
+      .andWhere("donor.availabilityStatus = :status", {
+        status: AvailabilityStatus.AVAILABLE,
+      })
       .getMany();
 
-    return donors.filter(donor => {
+    return donors.filter((donor) => {
       const distance = this.calculateDistance(
         latitude,
         longitude,

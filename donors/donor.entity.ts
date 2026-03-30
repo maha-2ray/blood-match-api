@@ -19,79 +19,89 @@ export enum AvailabilityStatus {
   UNAVAILABLE = 'unavailable',
 }
 
+export enum Region {
+  KMC = 'KMC',
+  WCR = 'WCR',
+  NBR = 'NBR',
+  LRR = 'LRR',
+  URR = 'URR',
+  CRR = 'CRR',
+  BCC = 'BCC'
+}
+
 @Entity('donors')
 export class Donor {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @OneToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn()
-  user: User;
+  user!: User;
 
   @Column()
-  userId: string;
+  userId!: string;
 
   @Column({
     type: 'enum',
     enum: BloodType,
   })
-  bloodType: BloodType;
+  bloodType!: BloodType;
 
   @Column({
     type: 'enum',
     enum: AvailabilityStatus,
     default: AvailabilityStatus.AVAILABLE,
   })
-  availabilityStatus: AvailabilityStatus;
+  availabilityStatus!: AvailabilityStatus;
 
   @Column({ type: 'float', nullable: true })
-  latitude: number;
+  latitude!: number;
 
   @Column({ type: 'float', nullable: true })
-  longitude: number;
+  longitude!: number;
 
   @Column({ nullable: true })
-  address: string;
+  address!: string;
 
   @Column({ nullable: true })
-  city: string;
+  city!: string;
 
   @Column({ nullable: true })
-  state: string;
+  state!: string;
 
   @Column({ nullable: true })
-  country: string;
+  country!: string;
 
   @Column({ nullable: true })
-  dateOfBirth: Date;
+  dateOfBirth!: Date;
 
   @Column({ nullable: true })
-  gender: string;
+  gender!: string;
 
   @Column({ default: 0 })
-  donationsCount: number;
+  donationsCount!: number;
 
   @Column({ nullable: true })
-  lastDonationDate: Date;
+  lastDonationDate!: Date;
 
   @Column({ default: true })
-  canDonatePlatelets: boolean;
+  canDonatePlatelets!: boolean;
 
   @Column({ default: true })
-  canDonatePlasma: boolean;
+  canDonatePlasma!: boolean;
 
   @Column({ default: true })
-  canDonateRedCells: boolean;
+  canDonateRedCells!: boolean;
 
   @Column({ type: 'text', nullable: true })
-  medicalNotes: string;
+  medicalNotes!: string;
 
   @OneToMany(() => BloodRequest, request => request.donor)
-  requests: BloodRequest[];
+  requests!: BloodRequest[];
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

@@ -1,10 +1,18 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsNumber, IsString, IsBoolean, IsDateString } from 'class-validator';
-import { BloodType, AvailabilityStatus } from '../donor.entity';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsNumber,
+  IsString,
+  IsBoolean,
+  IsDateString,
+} from "class-validator";
+import { BloodType, Region, AvailabilityStatus } from "../donor.entity";
 
 export class CreateDonorDto {
   @IsEnum(BloodType)
   @IsNotEmpty()
-  bloodType: BloodType;
+  bloodType!: BloodType;
 
   @IsEnum(AvailabilityStatus)
   @IsOptional()
@@ -22,17 +30,13 @@ export class CreateDonorDto {
   @IsOptional()
   address?: string;
 
-  @IsString()
+  @IsEnum(Region)
   @IsOptional()
-  city?: string;
+  region?: Region;
 
   @IsString()
   @IsOptional()
-  state?: string;
-
-  @IsString()
-  @IsOptional()
-  country?: string;
+  landMark?: string;
 
   @IsDateString()
   @IsOptional()
@@ -41,18 +45,6 @@ export class CreateDonorDto {
   @IsString()
   @IsOptional()
   gender?: string;
-
-  @IsBoolean()
-  @IsOptional()
-  canDonatePlatelets?: boolean;
-
-  @IsBoolean()
-  @IsOptional()
-  canDonatePlasma?: boolean;
-
-  @IsBoolean()
-  @IsOptional()
-  canDonateRedCells?: boolean;
 
   @IsString()
   @IsOptional()

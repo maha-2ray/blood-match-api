@@ -13,7 +13,7 @@ export class DonorsController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  create(@Request() req, @Body() createDonorDto: CreateDonorDto) {
+  create(@Request() req: any, @Body() createDonorDto: CreateDonorDto) {
     return this.donorsService.create(req.user.id, createDonorDto);
   }
 
@@ -34,7 +34,7 @@ export class DonorsController {
   @Get('profile')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  getMyProfile(@Request() req) {
+  getMyProfile(@Request() req: any) {
     return this.donorsService.findByUserId(req.user.id);
   }
 
@@ -58,7 +58,7 @@ export class DonorsController {
   @Patch('availability')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  updateAvailability(@Request() req, @Body('status') status: AvailabilityStatus) {
+  updateAvailability(@Request() req: any, @Body('status') status: AvailabilityStatus) {
     return this.donorsService.updateAvailability(req.user.id, status);
   }
 
@@ -66,7 +66,7 @@ export class DonorsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   updateLocation(
-    @Request() req,
+    @Request() req: any,
     @Body('latitude') latitude: number,
     @Body('longitude') longitude: number,
   ) {
@@ -76,7 +76,7 @@ export class DonorsController {
   @Patch('record-donation')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  recordDonation(@Request() req) {
+  recordDonation(@Request() req: any) {
     return this.donorsService.recordDonation(req.user.id);
   }
 

@@ -1,14 +1,22 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsNumber, IsString, IsBoolean, IsDateString } from 'class-validator';
-import { RequestType } from '../request.entity';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsNumber,
+  IsString,
+  IsBoolean,
+  IsDateString,
+} from "class-validator";
+import { UrgencyType } from "../request.entity";
 
 export class CreateRequestDto {
-  @IsEnum(RequestType)
+  @IsEnum(UrgencyType)
   @IsOptional()
-  type?: RequestType;
+  type?: UrgencyType;
 
   @IsString()
   @IsNotEmpty()
-  bloodType: string;
+  bloodType!: string;
 
   @IsNumber()
   @IsOptional()
@@ -16,7 +24,7 @@ export class CreateRequestDto {
 
   @IsString()
   @IsNotEmpty()
-  patientName: string;
+  patientName!: string;
 
   @IsNumber()
   @IsOptional()
@@ -24,11 +32,11 @@ export class CreateRequestDto {
 
   @IsString()
   @IsNotEmpty()
-  hospitalName: string;
+  hospitalName!: string;
 
   @IsString()
   @IsNotEmpty()
-  hospitalAddress: string;
+  hospitalAddress!: string;
 
   @IsNumber()
   @IsOptional()
@@ -40,7 +48,7 @@ export class CreateRequestDto {
 
   @IsDateString()
   @IsNotEmpty()
-  requiredBy: Date;
+  requiredBy!: Date;
 
   @IsString()
   @IsOptional()

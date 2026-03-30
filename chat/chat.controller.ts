@@ -12,32 +12,32 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Post('send')
-  sendMessage(@Request() req, @Body() sendMessageDto: SendMessageDto) {
+  sendMessage(@Request() req: any, @Body() sendMessageDto: SendMessageDto) {
     return this.chatService.sendMessage(req.user.id, sendMessageDto);
   }
 
   @Get('rooms')
-  getMyChatRooms(@Request() req) {
+  getMyChatRooms(@Request() req: any) {
     return this.chatService.getMyChatRooms(req.user.id);
   }
 
   @Get('conversation/:userId')
-  getConversation(@Request() req, @Param('userId') userId: string) {
+  getConversation(@Request() req: any, @Param('userId') userId: string) {
     return this.chatService.getConversation(req.user.id, userId);
   }
 
   @Get('unread')
-  getUnreadCount(@Request() req) {
+  getUnreadCount(@Request() req: any) {
     return this.chatService.getUnreadCount(req.user.id);
   }
 
   @Get('unread/:senderId')
-  getUnreadCountBySender(@Request() req, @Param('senderId') senderId: string) {
+  getUnreadCountBySender(@Request() req: any, @Param('senderId') senderId: string) {
     return this.chatService.getUnreadCountBySender(req.user.id, senderId);
   }
 
   @Post('mark-as-read/:senderId')
-  markAsRead(@Request() req, @Param('senderId') senderId: string) {
+  markAsRead(@Request() req: any, @Param('senderId') senderId: string) {
     return this.chatService.markAsRead(senderId, req.user.id);
   }
 }

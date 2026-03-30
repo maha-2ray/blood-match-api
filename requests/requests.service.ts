@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BloodRequest, RequestStatus, RequestType } from './request.entity';
+import { BloodRequest, RequestStatus, UrgencyType } from './request.entity';
 import { CreateRequestDto } from './dto/create-request.dto';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class RequestsService {
     bloodType?: string,
     requesterId?: string,
     donorId?: string,
-    isUrgent?: boolean,
+    urgencyType?: UrgencyType
   ): Promise<BloodRequest[]> {
     const query = this.requestsRepository.createQueryBuilder('request')
       .leftJoinAndSelect('request.requester', 'requester')
@@ -45,17 +45,15 @@ export class RequestsService {
         'request.hospitalLongitude',
         'request.requiredBy',
         'request.notes',
-        'request.isUrgent',
+        'request.urgencyType',
         'request.createdAt',
         'requester.id',
-        'requester.firstName',
-        'requester.lastName',
+        'requester.fullName',
         'requester.phone',
         'requester.email',
         'donor.id',
         'donorUser.id',
-        'donorUser.firstName',
-        'donorUser.lastName',
+        'donorUser.fullName',
         'donorUser.phone',
       ]);
 
@@ -75,9 +73,13 @@ export class RequestsService {
       query.andWhere('request.donorId = :donorId', { donorId });
     }
 
-    if (isUrgent !== undefined) {
-      query.andWhere('request.isUrgent = :isUrgent', { isUrgent });
+    if(urgencyType) {
+      query.andWhere('request.requestType = :urgencyType', { urgencyType })
     }
+
+    // if (isUrgent !== undefined) {
+    //   query.andWhere('request.isUrgent = :isUrgent', { isUrgent });
+    // }
 
     query.orderBy('request.createdAt', 'DESC');
 
@@ -91,8 +93,7 @@ export class RequestsService {
       select: {
         requester: {
           id: true,
-          firstName: true,
-          lastName: true,
+          fullName: true,
           phone: true,
           email: true,
         },
@@ -163,15 +164,21 @@ export class RequestsService {
     const totalRequests = await this.requestsRepository.count();
     const pendingRequests = await this.requestsRepository.count({ where: { status: RequestStatus.PENDING } });
     const acceptedRequests = await this.requestsRepository.count({ where: { status: RequestStatus.ACCEPTED } });
-    const completedRequests = await this.requestsRepository.count({ where: { status: RequestStatus.COMPLETED } });
-    const urgentRequests = await this.requestsRepository.count({ where: { isUrgent: true } });
+    const rejectedRequests = await this.requestsRepository.count({ where: { status: RequestStatus.REJECTED } });
+    // const criticalRequests = await this.requestsRepository.count({ where: { status: UrgencyType.CRITICAL } });
+    // const moderateRequests = await this.requestsRepository.count({ where: { status: UrgencyType.MODERATE } });
+    // const highRequests = await this.requestsRepository.count({ where: { urgencyType: UrgencyType.HIGH } });
+    // const lowRequests = await this.requestsRepository.count({ where: { status: UrgencyType.LOW } });
 
     return {
       totalRequests,
       pendingRequests,
       acceptedRequests,
-      completedRequests,
-      urgentRequests,
+      rejectedRequests,
+      // criticalRequests,
+      // moderateRequests,
+      // highRequests,
+      // lowRequests
     };
   }
 }
