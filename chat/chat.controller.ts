@@ -16,10 +16,12 @@ export class ChatController {
     return this.chatService.sendMessage(req.user.id, sendMessageDto);
   }
 
-  @Get('rooms')
-  getMyChatRooms(@Request() req: any) {
-    return this.chatService.getMyChatRooms(req.user.id);
-  }
+  /**This feature is not needed as of now */
+
+  // @Get('rooms')
+  // getMyChatRooms(@Request() req: any) {
+  //   return this.chatService.getMyChatRooms(req.user.id);
+  // }
 
   @Get('conversation/:userId')
   getConversation(@Request() req: any, @Param('userId') userId: string) {

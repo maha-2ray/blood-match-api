@@ -146,7 +146,6 @@ export class DonorsService {
 
   async recordDonation(userId: string): Promise<Donor> {
     const donor = await this.findByUserId(userId);
-    donor.donationsCount += 1;
     donor.lastDonationDate = new Date();
     return this.donorsRepository.save(donor);
   }

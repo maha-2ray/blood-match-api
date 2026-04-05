@@ -67,10 +67,7 @@ export class Donor {
   city!: string;
 
   @Column({ nullable: true })
-  state!: string;
-
-  @Column({ nullable: true })
-  country!: string;
+  region!: string;
 
   @Column({ nullable: true })
   dateOfBirth!: Date;
@@ -78,20 +75,9 @@ export class Donor {
   @Column({ nullable: true })
   gender!: string;
 
-  @Column({ default: 0 })
-  donationsCount!: number;
 
   @Column({ nullable: true })
   lastDonationDate!: Date;
-
-  @Column({ default: true })
-  canDonatePlatelets!: boolean;
-
-  @Column({ default: true })
-  canDonatePlasma!: boolean;
-
-  @Column({ default: true })
-  canDonateRedCells!: boolean;
 
   @Column({ type: 'text', nullable: true })
   medicalNotes!: string;
