@@ -8,6 +8,7 @@ import { Repository } from "typeorm";
 import { User } from "./user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import * as bcrypt from "bcrypt";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 @Injectable()
 export class UsersService {
@@ -39,15 +40,6 @@ export class UsersService {
   async findAll(): Promise<User[]> {
     return this.usersRepository.find({
       relations: ["donorProfile"],
-      select: [
-        "id",
-        "email",
-        "fullName",
-        "phone",
-        "role",
-        "isActive",
-        "createdAt",
-      ],
     });
   }
 
@@ -55,15 +47,6 @@ export class UsersService {
     const user = await this.usersRepository.findOne({
       where: { id },
       relations: ["donorProfile"],
-      select: [
-        "id",
-        "email",
-        "fullName",
-        "phone",
-        "role",
-        "isActive",
-        "createdAt",
-      ],
     });
 
     if (!user) {
@@ -80,9 +63,9 @@ export class UsersService {
     });
   }
 
-  async update(id: string, updateData: Partial<User>): Promise<User> {
+  async update(id: string, updateUser: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
-    Object.assign(user, updateData);
+    Object.assign(user, updateUser);
     return this.usersRepository.save(user);
   }
 

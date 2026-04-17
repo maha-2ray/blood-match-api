@@ -25,61 +25,64 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async registerStart(registerStartDto: RegisterStartDto) {
-    const phone = this.normalizePhone(registerStartDto.phone);
-    const email = registerStartDto.email?.trim().toLowerCase();
-
-    const userByPhone = await this.usersRepository.findOne({
-      where: { phone },
+  async validateUser(phone: string, passcode: string): Promise<any> {
+    const user = await this.usersRepository.findOne({
+      where: { phone: phone },
     });
-    if (userByPhone?.phoneVerifiedAt) {
-      throw new ConflictException(
-        "An account with this phone number already exists",
-      );
-    }
-
-    if (email) {
-      const userByEmail = await this.usersRepository.findOne({
-        where: { email },
-      });
-      if (userByEmail && userByEmail.phone !== phone) {
-        throw new ConflictException(
-          "This email is already used by another account",
-        );
+    if (user && user.password) {
+      const isMatch = await bcrypt.compare(passcode, user.password);
+      if (isMatch) {
+        const { password, ...result } = user;
+        return result;
       }
     }
+    return null;
+  }
 
-    let user = userByPhone;
-    if (!user) {
-      user = this.usersRepository.create({
-        phone,
-        email,
-        fullName: registerStartDto.fullName,
-        role: registerStartDto.role ?? UserRole.DONOR,
-        isActive: true,
-      });
-    } else {
-      user.fullName = registerStartDto.fullName;
-      user.role = registerStartDto.role ?? user.role;
-      if (email) {
-        user.email = email;
+  async registerUser(registerStartDto: RegisterStartDto) {
+    const existingUser = await this.usersRepository.findOne({
+      where: [
+        { phone: registerStartDto.phone },
+        { email: registerStartDto.email?.trim().toLowerCase() },
+      ],
+    });
+
+    if (existingUser) {
+      if (existingUser.phone === registerStartDto.phone) {
+        throw new ConflictException("Phone number already in use");
+      }
+      if (
+        registerStartDto.email &&
+        existingUser.email === registerStartDto.email.trim().toLowerCase()
+      ) {
+        throw new ConflictException("Email already in use");
       }
     }
-    await this.usersRepository.save(user);
+    const user = await this.usersRepository.create({
+      email: registerStartDto.email?.trim().toLowerCase(),
+      phone: registerStartDto.phone,
+      fullName: registerStartDto.fullName,
+      role: UserRole.ADMIN,
+      isActive: true,
+    });
 
-    const otpPayload = await this.issueOtp(phone, OtpPurpose.REGISTER);
+    if (registerStartDto.password) {
+      user.password = await bcrypt.hash(registerStartDto.password, 10);
+    }
+
+    const savedUser = await this.usersRepository.save(user);
 
     return {
-      message: "Verification code sent",
-      phone,
-      expiresInSeconds: otpPayload.expiresInSeconds,
-      ...(otpPayload.debugCode
-        ? { verificationCode: otpPayload.debugCode }
-        : {}),
+      id: savedUser.id,
+      email: savedUser.email,
+      fullName: savedUser.fullName,
+      role: savedUser.role,
+      phone: savedUser.phone,
+      phoneVerifiedAt: savedUser.phoneVerifiedAt,
     };
   }
 
-  async registerVerify(verifyCodeDto: VerifyCodeDto) {
+  /*async registerVerify(verifyCodeDto: VerifyCodeDto) {
     const phone = this.normalizePhone(verifyCodeDto.phone);
     const otpRecord = await this.validateOtp(
       phone,
@@ -105,9 +108,9 @@ export class AuthService {
         "Phone number verified. Set your passcode to finish registration.",
       phone,
     };
-  }
+  }*/
 
-  async registerSetPasscode(setPasscodeDto: SetPasscodeDto) {
+  /*async registerSetPasscode(setPasscodeDto: SetPasscodeDto) {
     const phone = this.normalizePhone(setPasscodeDto.phone);
     const user = await this.usersRepository.findOne({ where: { phone } });
 
@@ -119,28 +122,64 @@ export class AuthService {
     await this.usersRepository.save(user);
 
     return this.buildAuthResponse(user);
-  }
+  }*/
 
   async login(loginDto: LoginDto) {
-    const phone = this.normalizePhone(loginDto.phone);
-    const user = await this.usersRepository.findOne({ where: { phone } });
+    let user: User | null = null;
+    if (loginDto.phone || loginDto.email) {
+      user = await this.usersRepository.findOne({
+        where: {
+          phone: loginDto.phone,
+          email: loginDto.email?.trim().toLowerCase(),
+        },
+      });
 
-    if (!user?.password || !user.phoneVerifiedAt) {
+      if (!user) {
+        throw new UnauthorizedException("Invalid credentials");
+      }
+
+      if (!user.phone || !user.email) {
+        throw new UnauthorizedException("Invalid credentials");
+      }
+    }
+
+    if (!user?.password) {
       throw new UnauthorizedException("Invalid credentials");
     }
 
-    const isValidPasscode = await bcrypt.compare(
-      loginDto.passcode,
+    const isValidPassword = await bcrypt.compare(
+      loginDto.password,
       user.password,
     );
-    if (!isValidPasscode) {
+    if (!isValidPassword) {
       throw new UnauthorizedException("Invalid credentials");
     }
 
-    return this.buildAuthResponse(user);
+    const payload = {
+      phone: user.phone,
+      email: user.email,
+      sub: user.id,
+      role: user.role,
+    };
+
+    const accessToken = this.jwtService.sign(payload);
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: "7d" });
+
+    return {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role,
+        phone: user.phone,
+        phoneVerifiedAt: user.phoneVerifiedAt,
+      },
+    };
   }
 
-  private buildAuthResponse(user: User) {
+  /*private buildAuthResponse(user: User) {
     const payload = {
       phone: user.phone,
       email: user.email,
@@ -159,9 +198,9 @@ export class AuthService {
         phoneVerifiedAt: user.phoneVerifiedAt,
       },
     };
-  }
+  }*/
 
-  private async issueOtp(phone: string, purpose: OtpPurpose) {
+  /*private async issueOtp(phone: string, purpose: OtpPurpose) {
     await this.otpCodeRepository.update(
       { phone, purpose, isUsed: false },
       { isUsed: true },
@@ -245,5 +284,5 @@ export class AuthService {
     }
 
     return this.issueOtp(normalizedPhone, OtpPurpose.LOGIN);
-  }
+  }*/
 }

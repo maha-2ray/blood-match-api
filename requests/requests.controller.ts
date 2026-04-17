@@ -1,12 +1,29 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query } from '@nestjs/common';
-import { RequestsService } from './requests.service';
-import { CreateRequestDto } from './dto/create-request.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ApiTags, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
-import { RequestStatus, UrgencyType } from './request.entity';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+  Query,
+} from "@nestjs/common";
+import { RequestsService } from "./requests.service";
+import { CreateRequestDto } from "./dto/create-request.dto";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { ApiTags, ApiBearerAuth, ApiQuery } from "@nestjs/swagger";
+import { RequestStatus, UrgencyType } from "./request.entity";
+import { UpdateRequestDto } from "./dto/update-request.dto";
+import { RolesGuard } from "../auth/guards/roles.guard";
+import { UserRole } from "../users/user.entity";
+import { Roles } from "../auth/decorators/roles.decorator";
 
-@ApiTags('requests')
-@Controller('requests')
+@ApiTags("requests")
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.ADMIN, UserRole.DONOR, UserRole.REQUESTER)
+@Controller("requests")
 export class RequestsController {
   constructor(private readonly requestsService: RequestsService) {}
 
@@ -18,17 +35,17 @@ export class RequestsController {
   }
 
   @Get()
-  @ApiQuery({ name: 'status', enum: RequestStatus, required: false })
-  @ApiQuery({ name: 'bloodType', required: false })
-  @ApiQuery({ name: 'requesterId', required: false })
-  @ApiQuery({ name: 'donorId', required: false })
-  @ApiQuery({ name: 'urgencyType', enum: UrgencyType ,required: false })
+  @ApiQuery({ name: "status", enum: RequestStatus, required: false })
+  @ApiQuery({ name: "bloodType", required: false })
+  @ApiQuery({ name: "requesterId", required: false })
+  @ApiQuery({ name: "donorId", required: false })
+  @ApiQuery({ name: "urgencyType", enum: UrgencyType, required: false })
   findAll(
-    @Query('status') status?: RequestStatus,
-    @Query('bloodType') bloodType?: string,
-    @Query('requesterId') requesterId?: string,
-    @Query('donorId') donorId?: string,
-    @Query('urgencyType') urgencyType?: UrgencyType,
+    @Query("status") status?: RequestStatus,
+    @Query("bloodType") bloodType?: string,
+    @Query("requesterId") requesterId?: string,
+    @Query("donorId") donorId?: string,
+    @Query("urgencyType") urgencyType?: UrgencyType,
   ) {
     return this.requestsService.findAll(
       status,
@@ -39,64 +56,81 @@ export class RequestsController {
     );
   }
 
-  @Get('my')
+  @Get("my")
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   getMyRequests(@Request() req: any) {
-    return this.requestsService.findAll(undefined, undefined, req.user.id, undefined, undefined);
+    return this.requestsService.findAll(
+      undefined,
+      undefined,
+      req.user.id,
+      undefined,
+      undefined,
+    );
   }
 
-  @Get('my-donations')
+  @Get("my-donations")
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   getMyDonations(@Request() req: any) {
-    return this.requestsService.findAll(undefined, undefined, undefined, req.user.id, undefined);
+    return this.requestsService.findAll(
+      undefined,
+      undefined,
+      undefined,
+      req.user.id,
+      undefined,
+    );
   }
 
-  @Get('stats')
+  @Get("stats")
   getStats() {
     return this.requestsService.getStats();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get(":id")
+  findOne(@Param("id") id: string) {
     return this.requestsService.findOne(id);
   }
 
-  @Patch(':id')
+  @Patch(":id")
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  update(@Param('id') id: string, @Body() updateData: Partial<any>, @Request() req: any) {
-    return this.requestsService.update(id, updateData, req.user.id);
+  update(@Param("id") id: string, @Body() updateData: UpdateRequestDto) {
+    return this.requestsService.update(id, updateData);
   }
 
-  @Patch(':id/status')
+  @Patch(":id/status")
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   updateStatus(
-    @Param('id') id: string,
-    @Body('status') status: RequestStatus,
-    @Body('rejectionReason') rejectionReason: string,
+    @Param("id") id: string,
+    @Body("status") status: RequestStatus,
+    @Body("rejectionReason") rejectionReason: string,
     @Request() req: any,
   ) {
-    return this.requestsService.updateStatus(id, status, req.user.id, rejectionReason);
+    return this.requestsService.updateStatus(
+      id,
+      status,
+      req.user.id,
+      rejectionReason,
+    );
   }
 
-  @Patch(':id/assign-donor')
+  @Patch(":id/assign-donor")
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   assignDonor(
-    @Param('id') id: string,
-    @Body('donorId') donorId: string,
+    @Param("id") id: string,
+    @Body("donorId") donorId: string,
     @Request() req: any,
   ) {
     return this.requestsService.assignDonor(id, donorId, req.user.id);
   }
 
-  @Delete(':id')
+  @Delete(":id")
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  remove(@Param('id') id: string, @Request() req: any) {
-    return this.requestsService.remove(id, req.user.id);
+  remove(@Param("id") id: string) {
+    return this.requestsService.remove(id);
   }
 }
