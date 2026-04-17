@@ -8,6 +8,7 @@ import { Repository } from "typeorm";
 import { User } from "./user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import * as bcrypt from "bcrypt";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 @Injectable()
 export class UsersService {
@@ -80,9 +81,9 @@ export class UsersService {
     });
   }
 
-  async update(id: string, updateData: Partial<User>): Promise<User> {
+  async update(id: string, updateUser: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
-    Object.assign(user, updateData);
+    Object.assign(user, updateUser);
     return this.usersRepository.save(user);
   }
 
