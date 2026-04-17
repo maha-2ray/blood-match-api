@@ -40,15 +40,6 @@ export class UsersService {
   async findAll(): Promise<User[]> {
     return this.usersRepository.find({
       relations: ["donorProfile"],
-      select: [
-        "id",
-        "email",
-        "fullName",
-        "phone",
-        "role",
-        "isActive",
-        "createdAt",
-      ],
     });
   }
 
@@ -56,15 +47,6 @@ export class UsersService {
     const user = await this.usersRepository.findOne({
       where: { id },
       relations: ["donorProfile"],
-      select: [
-        "id",
-        "email",
-        "fullName",
-        "phone",
-        "role",
-        "isActive",
-        "createdAt",
-      ],
     });
 
     if (!user) {

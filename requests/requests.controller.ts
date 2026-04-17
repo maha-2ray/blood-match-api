@@ -16,8 +16,13 @@ import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { ApiTags, ApiBearerAuth, ApiQuery } from "@nestjs/swagger";
 import { RequestStatus, UrgencyType } from "./request.entity";
 import { UpdateRequestDto } from "./dto/update-request.dto";
+import { RolesGuard } from "../auth/guards/roles.guard";
+import { UserRole } from "../users/user.entity";
+import { Roles } from "../auth/decorators/roles.decorator";
 
 @ApiTags("requests")
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.ADMIN, UserRole.DONOR, UserRole.REQUESTER)
 @Controller("requests")
 export class RequestsController {
   constructor(private readonly requestsService: RequestsService) {}

@@ -19,7 +19,12 @@ import { AuthService } from "./auth.service";
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get("JWT_SECRET") || "secret_key",
-        signOptions: { expiresIn: "7d" },
+        signOptions: {
+          expiresIn: "7d",
+          issuer: configService.get("JWT_ISSUER") || "BLOOD-MATCH-API",
+          audience:
+            configService.get("JWT_AUDIENCE") || "BLOOD-MATCH-API-CLIENT",
+        },
       }),
       inject: [ConfigService],
     }),
