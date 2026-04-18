@@ -64,8 +64,16 @@ export class UsersService {
   }
 
   async update(id: string, updateUser: UpdateUserDto): Promise<User> {
-    const user = await this.findOne(id);
-    Object.assign(user, updateUser);
+    const user = await this.usersRepository.preload({
+      id,
+      ...updateUser,
+    });
+    if (!user?.id) {
+      throw new NotFoundException("User not found");
+    }
+    if (updateUser.password) {
+      user.password = await bcrypt.hash(updateUser.password, 10);
+    }
     return this.usersRepository.save(user);
   }
 
