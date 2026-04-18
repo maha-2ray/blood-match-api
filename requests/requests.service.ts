@@ -28,68 +28,37 @@ export class RequestsService {
     return this.requestsRepository.save(request);
   }
 
-  async findAll(
-    status?: RequestStatus,
-    bloodType?: string,
-    requesterId?: string,
-    donorId?: string,
-    urgencyType?: UrgencyType,
-  ): Promise<BloodRequest[]> {
-    const query = this.requestsRepository
-      .createQueryBuilder("request")
-      .leftJoinAndSelect("request.requester", "requester")
-      .leftJoinAndSelect("request.donor", "donor")
-      .leftJoinAndSelect("donor.user", "donorUser")
-      .select([
-        "request.id",
-        "request.type",
-        "request.bloodType",
-        "request.unitsNeeded",
-        "request.status",
-        "request.patientName",
-        "request.patientAge",
-        "request.hospitalName",
-        "request.hospitalAddress",
-        "request.hospitalLatitude",
-        "request.hospitalLongitude",
-        "request.requiredBy",
-        "request.notes",
-        "request.urgencyType",
-        "request.createdAt",
-        "requester.id",
-        "requester.fullName",
-        "requester.phone",
-        "requester.email",
-        "donor.id",
-        "donorUser.id",
-        "donorUser.fullName",
-        "donorUser.phone",
-      ]);
-
-    if (status) {
-      query.andWhere("request.status = :status", { status });
+  async findAll(filters?: {
+    status?: RequestStatus;
+    bloodType?: string;
+    requesterId?: string;
+    donorId?: string;
+    urgencyType?: UrgencyType;
+  }): Promise<BloodRequest[]> {
+    const query = this.requestsRepository.createQueryBuilder("request");
+    if (filters?.status) {
+      query.andWhere("request.status = :status", { status: filters.status });
     }
-
-    if (bloodType) {
-      query.andWhere("request.bloodType = :bloodType", { bloodType });
+    if (filters?.bloodType) {
+      query.andWhere("request.bloodType = :bloodType", {
+        bloodType: filters.bloodType,
+      });
     }
-
-    if (requesterId) {
-      query.andWhere("request.requesterId = :requesterId", { requesterId });
+    if (filters?.requesterId) {
+      query.andWhere("request.requesterId = :requesterId", {
+        requesterId: filters.requesterId,
+      });
     }
-
-    if (donorId) {
-      query.andWhere("request.donorId = :donorId", { donorId });
+    if (filters?.donorId) {
+      query.andWhere("request.donorId = :donorId", {
+        donorId: filters.donorId,
+      });
     }
-
-    if (urgencyType) {
-      query.andWhere("request.requestType = :urgencyType", { urgencyType });
+    if (filters?.urgencyType) {
+      query.andWhere("request.urgencyType = :urgencyType", {
+        urgencyType: filters.urgencyType,
+      });
     }
-
-    // if (isUrgent !== undefined) {
-    //   query.andWhere('request.isUrgent = :isUrgent', { isUrgent });
-    // }
-
     query.orderBy("request.createdAt", "DESC");
 
     return query.getMany();
@@ -99,18 +68,6 @@ export class RequestsService {
     const request = await this.requestsRepository.findOne({
       where: { id },
       relations: ["requester", "donor", "donor.user"],
-      select: {
-        requester: {
-          id: true,
-          fullName: true,
-          phone: true,
-          email: true,
-        },
-        donor: {
-          id: true,
-          bloodType: true,
-        },
-      },
     });
 
     if (!request) {
@@ -124,10 +81,24 @@ export class RequestsService {
     id: string,
     updateData: UpdateRequestDto,
   ): Promise<BloodRequest> {
-    const request = await this.findOne(id);
+    const request = await this.requestsRepository.preload({
+      type: updateData.type,
+      bloodType: updateData.bloodType,
+      unitsNeeded: updateData.unitsNeeded,
+      patientName: updateData.patientName,
+      patientAge: updateData.patientAge,
+      hospitalName: updateData.hospitalName,
+      hospitalAddress: updateData.hospitalAddress,
+      hospitalLatitude: updateData.hospitalLatitude,
+      hospitalLongitude: updateData.hospitalLongitude,
+      requiredBy: updateData.requiredBy,
+      notes: updateData.notes,
+      isUrgent: updateData.isUrgent,
+      donorId: updateData.donorId,
+    });
 
-    Object.assign(request, updateData);
-    return this.requestsRepository.save(request);
+    const savedRequest = await this.requestsRepository.save(request!);
+    return savedRequest;
   }
 
   async updateStatus(

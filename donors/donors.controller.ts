@@ -48,12 +48,12 @@ export class DonorsController {
     @Query("city") city?: string,
     @Query("country") country?: string,
   ) {
-    return this.donorsService.findAll(
+    return this.donorsService.findAll({
       bloodType,
       availabilityStatus,
       city,
       country,
-    );
+    });
   }
 
   @Get("profile")

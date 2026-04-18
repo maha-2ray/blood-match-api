@@ -32,52 +32,33 @@ export class DonorsService {
     return this.donorsRepository.save(donor);
   }
 
-  async findAll(
-    bloodType?: BloodType,
-    availabilityStatus?: AvailabilityStatus,
-    city?: string,
-    country?: string,
-  ): Promise<Donor[]> {
-    const query = this.donorsRepository
-      .createQueryBuilder("donor")
-      .leftJoinAndSelect("donor.user", "user")
-      .select([
-        "donor.id",
-        "donor.bloodType",
-        "donor.availabilityStatus",
-        "donor.latitude",
-        "donor.longitude",
-        "donor.address",
-        "donor.city",
-        "donor.country",
-        "donor.donationsCount",
-        "donor.lastDonationDate",
-        "donor.canDonatePlatelets",
-        "donor.canDonatePlasma",
-        "donor.canDonateRedCells",
-        "user.id",
-        "user.fullName",
-        "user.phone",
-        "user.email",
-      ]);
+  async findAll(filters: {
+    bloodType?: BloodType;
+    availabilityStatus?: AvailabilityStatus;
+    city?: string;
+    country?: string;
+  }): Promise<Donor[]> {
+    const query = this.donorsRepository.createQueryBuilder("donor");
 
-    if (bloodType) {
-      query.andWhere("donor.bloodType = :bloodType", { bloodType });
-    }
-
-    if (availabilityStatus) {
-      query.andWhere("donor.availabilityStatus = :availabilityStatus", {
-        availabilityStatus,
+    if (filters?.bloodType) {
+      query.andWhere("donor.bloodType = :bloodType", {
+        bloodType: filters.bloodType,
       });
     }
 
-    if (city) {
-      query.andWhere("donor.city ILIKE :city", { city: `%${city}%` });
+    if (filters?.availabilityStatus) {
+      query.andWhere("donor.availabilityStatus = :availabilityStatus", {
+        availabilityStatus: filters.availabilityStatus,
+      });
     }
 
-    if (country) {
+    if (filters?.city) {
+      query.andWhere("donor.city ILIKE :city", { city: `%${filters.city}%` });
+    }
+
+    if (filters?.country) {
       query.andWhere("donor.country ILIKE :country", {
-        country: `%${country}%`,
+        country: `%${filters.country}%`,
       });
     }
 

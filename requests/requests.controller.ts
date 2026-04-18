@@ -47,16 +47,16 @@ export class RequestsController {
     @Query("donorId") donorId?: string,
     @Query("urgencyType") urgencyType?: UrgencyType,
   ) {
-    return this.requestsService.findAll(
+    return this.requestsService.findAll({
       status,
       bloodType,
       requesterId,
       donorId,
       urgencyType,
-    );
+    });
   }
 
-  @Get("my")
+  /*@Get("my")
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   getMyRequests(@Request() req: any) {
@@ -67,9 +67,9 @@ export class RequestsController {
       undefined,
       undefined,
     );
-  }
+  }*/
 
-  @Get("my-donations")
+  /*@Get("my-donations")
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   getMyDonations(@Request() req: any) {
@@ -80,7 +80,7 @@ export class RequestsController {
       req.user.id,
       undefined,
     );
-  }
+  }*/
 
   @Get("stats")
   getStats() {
