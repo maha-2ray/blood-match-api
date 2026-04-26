@@ -82,7 +82,6 @@ export class AuthService {
     };
   }
 
-
   async login(loginDto: LoginDto) {
     let user: User | null = null;
     if (loginDto.phone || loginDto.email) {

@@ -17,7 +17,7 @@ export enum UserRole {
 @Entity("users")
 export class User {
   @PrimaryGeneratedColumn("uuid")
-  id!: string;
+  id: string;
 
   @Column({ unique: true, nullable: true })
   email?: string;
@@ -26,30 +26,30 @@ export class User {
   password?: string;
 
   @Column()
-  fullName!: string;
+  fullName: string;
 
   @Column({ unique: true })
-  phone!: string;
+  phone: string;
 
   @Column({
     type: "enum",
     enum: UserRole,
     default: UserRole.DONOR,
   })
-  role!: UserRole;
+  role: UserRole;
 
   @Column({ default: true })
-  isActive!: boolean;
+  isActive: boolean;
 
   @Column({ type: "timestamp", nullable: true })
   phoneVerifiedAt?: Date;
 
   @OneToOne(() => Donor, (donor) => donor.user)
-  donorProfile!: Donor;
+  donorProfile: Donor;
 
   @CreateDateColumn()
-  createdAt!: Date;
+  createdAt: Date;
 
   @UpdateDateColumn()
-  updatedAt!: Date;
+  updatedAt: Date;
 }
