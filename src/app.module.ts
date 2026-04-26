@@ -6,10 +6,8 @@ import { UsersModule } from "./users/users.module";
 import { DonorsModule } from "./donors/donors.module";
 import { RequestsModule } from "./requests/requests.module";
 import { ChatModule } from "./chat/chat.module";
-import { AppController } from "./app.controller";
 
 @Module({
-  controllers: [AppController],
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
