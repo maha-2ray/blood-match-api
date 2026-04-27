@@ -31,7 +31,7 @@ export class BloodRequest {
   requester: User;
 
   @Column()
-  requesterId!: string;
+  requesterId: string;
 
   @ManyToOne(() => Donor, { onDelete: "CASCADE", nullable: true })
   donor: Donor;

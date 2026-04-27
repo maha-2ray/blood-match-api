@@ -10,50 +10,50 @@ import {
 @Entity("chat_messages")
 export class ChatMessage {
   @PrimaryGeneratedColumn("uuid")
-  id!: string;
+  id: string;
 
   @ManyToOne(() => User, { onDelete: "CASCADE" })
-  sender!: User;
+  sender: User;
 
   @Column()
-  senderId!: string;
+  senderId: string;
 
   @ManyToOne(() => User, { onDelete: "CASCADE" })
-  receiver!: User;
+  receiver: User;
 
   @Column()
-  receiverId!: string;
+  receiverId: string;
 
   @Column({ type: "text" })
-  content!: string;
+  content: string;
 
   @Column({ default: false })
-  isRead!: boolean;
+  isRead: boolean;
 
   @CreateDateColumn()
-  createdAt!: Date;
+  createdAt: Date;
 }
 
 @Entity("chat_rooms")
 export class ChatRoom {
   @PrimaryGeneratedColumn("uuid")
-  id!: string;
+  id: string;
 
   @ManyToOne(() => User, { onDelete: "CASCADE" })
-  user1!: User;
+  user1: User;
 
   @Column()
-  user1Id!: string;
+  user1Id: string;
 
   @ManyToOne(() => User, { onDelete: "CASCADE" })
-  user2!: User;
+  user2: User;
 
   @Column()
-  user2Id!: string;
+  user2Id: string;
 
   @CreateDateColumn()
-  createdAt!: Date;
+  createdAt: Date;
 
   @Column({ nullable: true })
-  lastMessageAt!: Date;
+  lastMessageAt: Date;
 }
