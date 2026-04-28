@@ -7,6 +7,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Donor, AvailabilityStatus, BloodType } from "./donor.entity";
 import { CreateDonorDto } from "./dto/create-donor.dto";
+import { UpdateDonorDto } from "./dto/update-donor.dto";
 
 @Injectable()
 export class DonorsService {
@@ -69,20 +70,11 @@ export class DonorsService {
     const donor = await this.donorsRepository.findOne({
       where: { id },
       relations: ["user"],
-      select: {
-        user: {
-          id: true,
-          fullName: true,
-          phone: true,
-          email: true,
-        },
-      },
     });
 
     if (!donor) {
       throw new NotFoundException("Donor not found");
     }
-
     return donor;
   }
 
@@ -99,7 +91,7 @@ export class DonorsService {
     return donor;
   }
 
-  async update(id: string, updateData: Partial<Donor>): Promise<Donor> {
+  async update(id: string, updateData: UpdateDonorDto): Promise<Donor> {
     const donor = await this.findOne(id);
     Object.assign(donor, updateData);
     return this.donorsRepository.save(donor);
