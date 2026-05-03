@@ -65,11 +65,13 @@ export class RequestsService {
   }
 
   async findOne(id: string): Promise<BloodRequest> {
-    const request = await this.requestsRepository.findOne({
-      where: { id },
-      relations: ["requester", "donor", "donor.user"],
-    });
-
+    const request = await this.requestsRepository
+      .createQueryBuilder("request")
+      .leftJoinAndSelect("request.requester", "requester")
+      .leftJoinAndSelect("request.donor", "donor")
+      .leftJoinAndSelect("donor.user", "donorUser")
+      .where("request.id = :id", { id })
+      .getOne();
     if (!request) {
       throw new NotFoundException("Request not found");
     }
