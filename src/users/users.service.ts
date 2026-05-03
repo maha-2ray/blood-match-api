@@ -38,16 +38,18 @@ export class UsersService {
   }
 
   async findAll(): Promise<User[]> {
-    return this.usersRepository.find({
-      relations: ["donorProfile"],
-    });
+    return this.usersRepository
+      .createQueryBuilder("User")
+      .leftJoinAndSelect("User.donorProfile", "donorProfile")
+      .getMany();
   }
 
   async findOne(id: string): Promise<User> {
-    const user = await this.usersRepository.findOne({
-      where: { id },
-      relations: ["donorProfile"],
-    });
+    const user = await this.usersRepository
+      .createQueryBuilder("User")
+      .leftJoinAndSelect("User.donorProfile", "donorProfile")
+      .where("User.id = :id", { id })
+      .getOne();
 
     if (!user) {
       throw new NotFoundException("User not found");
@@ -57,10 +59,11 @@ export class UsersService {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return this.usersRepository.findOne({
-      where: { email },
-      relations: ["donorProfile"],
-    });
+    return this.usersRepository
+      .createQueryBuilder("User")
+      .leftJoinAndSelect("User.donorProfile", "donorProfile")
+      .where("User.email = :email", { email })
+      .getOne();
   }
 
   async update(id: string, updateUser: UpdateUserDto): Promise<User> {
