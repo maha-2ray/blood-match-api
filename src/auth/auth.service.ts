@@ -12,8 +12,8 @@ import { LoginDto } from "./dto/login.dto";
 import { RegisterStartDto } from "./dto/register-start.dto";
 import { VerifyCodeDto } from "./dto/verify-code.dto";
 import { SetPasscodeDto } from "./dto/set-passcode.dto";
-import { User, UserRole } from "../users/user.entity";
 import { OtpCode, OtpPurpose } from "./otp-code.entity";
+import { User, UserRole } from "../users/entities/user.entity";
 
 @Injectable()
 export class AuthService {

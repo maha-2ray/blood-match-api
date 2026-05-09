@@ -7,7 +7,7 @@ import {
   IsBoolean,
   IsDateString,
 } from "class-validator";
-import { UrgencyType } from "../request.entity";
+import { UrgencyType } from "../entities/request.entity";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateRequestDto {

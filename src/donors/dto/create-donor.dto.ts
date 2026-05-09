@@ -7,7 +7,11 @@ import {
   IsBoolean,
   IsDateString,
 } from "class-validator";
-import { BloodType, Region, AvailabilityStatus } from "../donor.entity";
+import {
+  BloodType,
+  Region,
+  AvailabilityStatus,
+} from "../entities/donor.entity";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateDonorDto {
