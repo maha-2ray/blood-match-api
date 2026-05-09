@@ -7,8 +7,8 @@ import {
   IsEnum,
   IsOptional,
 } from "class-validator";
-import { UserRole } from "../user.entity";
 import { ApiProperty } from "@nestjs/swagger";
+import { UserRole } from "../entities/user.entity";
 
 export class CreateUserDto {
   @ApiProperty({

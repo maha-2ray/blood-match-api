@@ -6,7 +6,13 @@
     "start": "node dist/main.js",
     "build": "tsc -p tsconfig.build.json",
     "audit:check": "npm audit --json",
-    "start:dev": "nest start --watch"
+    "start:dev": "nest start --watch",
+    "prepare": "husky install",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.17",
@@ -34,9 +40,18 @@
     "typeorm": "^0.3.28"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.0.0",
+    "@commitlint/config-conventional": "^21.0.0",
     "@nestjs/cli": "^11.0.16",
+    "@nestjs/testing": "^11.1.19",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.0.0",
-    "typescript": "5.9.3"
+    "@types/supertest": "^7.2.0",
+    "husky": "^8.0.0",
+    "jest": "^30.4.2",
+    "supertest": "^7.2.2",
+    "ts-jest": "^29.4.9",
+    "typescript": "^5.9.3"
   },
   "overrides": {
     "ajv": "8.18.0",
