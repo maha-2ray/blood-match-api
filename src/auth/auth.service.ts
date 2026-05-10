@@ -3,17 +3,17 @@ import {
   ConflictException,
   Injectable,
   UnauthorizedException,
-} from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import * as bcrypt from "bcrypt";
-import { LoginDto } from "./dto/login.dto";
-import { RegisterStartDto } from "./dto/register-start.dto";
-import { VerifyCodeDto } from "./dto/verify-code.dto";
-import { SetPasscodeDto } from "./dto/set-passcode.dto";
-import { OtpCode, OtpPurpose } from "./otp-code.entity";
-import { User, UserRole } from "../users/entities/user.entity";
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
+import { LoginDto } from './dto/login.dto';
+import { RegisterStartDto } from './dto/register-start.dto';
+import { VerifyCodeDto } from './dto/verify-code.dto';
+import { SetPasscodeDto } from './dto/set-passcode.dto';
+import { OtpCode, OtpPurpose } from './otp-code.entity';
+import { User, UserRole } from '../users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -49,13 +49,13 @@ export class AuthService {
 
     if (existingUser) {
       if (existingUser.phone === registerStartDto.phone) {
-        throw new ConflictException("Phone number already in use");
+        throw new ConflictException('Phone number already in use');
       }
       if (
         registerStartDto.email &&
         existingUser.email === registerStartDto.email.trim().toLowerCase()
       ) {
-        throw new ConflictException("Email already in use");
+        throw new ConflictException('Email already in use');
       }
     }
     const user = await this.usersRepository.create({
@@ -93,16 +93,16 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new UnauthorizedException("Invalid credentials");
+        throw new UnauthorizedException('Invalid credentials');
       }
 
       if (!user.phone || !user.email) {
-        throw new UnauthorizedException("Invalid credentials");
+        throw new UnauthorizedException('Invalid credentials');
       }
     }
 
     if (!user?.password) {
-      throw new UnauthorizedException("Invalid credentials");
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     const isValidPassword = await bcrypt.compare(
@@ -110,7 +110,7 @@ export class AuthService {
       user.password,
     );
     if (!isValidPassword) {
-      throw new UnauthorizedException("Invalid credentials");
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     const payload = {
@@ -121,7 +121,7 @@ export class AuthService {
     };
 
     const accessToken = this.jwtService.sign(payload);
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: "7d" });
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
 
     return {
       access_token: accessToken,
@@ -145,7 +145,7 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new UnauthorizedException("User not found");
+        throw new UnauthorizedException('User not found');
       }
       const payload = {
         phone: decoded.phone,
@@ -156,7 +156,7 @@ export class AuthService {
       const accessToken = this.jwtService.sign(payload);
       return { access_token: accessToken };
     } catch (error) {
-      throw new UnauthorizedException("Invalid or expired refresh token");
+      throw new UnauthorizedException('Invalid or expired refresh token');
     }
   }
 }

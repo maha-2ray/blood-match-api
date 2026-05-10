@@ -3,9 +3,9 @@ import {
   ExecutionContext,
   Injectable,
   UnauthorizedException,
-} from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
-import { UserRole } from "../../users/entities/user.entity";
+} from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { UserRole } from '../../users/entities/user.entity';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -13,7 +13,7 @@ export class RolesGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(
-      "roles",
+      'roles',
       [context.getHandler(), context.getClass()],
     );
     if (!requiredRoles) {
@@ -22,13 +22,13 @@ export class RolesGuard implements CanActivate {
 
     const { user } = context.switchToHttp().getRequest();
     if (!user) {
-      throw new UnauthorizedException("User not authenticated");
+      throw new UnauthorizedException('User not authenticated');
     }
 
     const hasRole = requiredRoles.includes(user.role);
     if (!hasRole) {
       throw new UnauthorizedException(
-        `User does not have the required role: ${requiredRoles.join(", ")}`,
+        `User does not have the required role: ${requiredRoles.join(', ')}`,
       );
     }
 

@@ -2,13 +2,13 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
-} from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { CreateUserDto } from "../dto/create-user.dto";
-import * as bcrypt from "bcrypt";
-import { UpdateUserDto } from "../dto/update-user.dto";
-import { User } from "../entities/user.entity";
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CreateUserDto } from '../dto/create-user.dto';
+import * as bcrypt from 'bcrypt';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { User } from '../entities/user.entity';
 
 @Injectable()
 export class UsersService {
@@ -24,7 +24,7 @@ export class UsersService {
 
     if (existingUser) {
       throw new ConflictException(
-        "User with this email or phone already exists",
+        'User with this email or phone already exists',
       );
     }
 
@@ -39,20 +39,20 @@ export class UsersService {
 
   async findAll(): Promise<User[]> {
     return this.usersRepository
-      .createQueryBuilder("User")
-      .leftJoinAndSelect("User.donorProfile", "donorProfile")
+      .createQueryBuilder('User')
+      .leftJoinAndSelect('User.donorProfile', 'donorProfile')
       .getMany();
   }
 
   async findOne(id: string): Promise<User> {
     const user = await this.usersRepository
-      .createQueryBuilder("User")
-      .leftJoinAndSelect("User.donorProfile", "donorProfile")
-      .where("User.id = :id", { id })
+      .createQueryBuilder('User')
+      .leftJoinAndSelect('User.donorProfile', 'donorProfile')
+      .where('User.id = :id', { id })
       .getOne();
 
     if (!user) {
-      throw new NotFoundException("User not found");
+      throw new NotFoundException('User not found');
     }
 
     return user;
@@ -60,9 +60,9 @@ export class UsersService {
 
   async findByEmail(email: string): Promise<User | null> {
     return this.usersRepository
-      .createQueryBuilder("User")
-      .leftJoinAndSelect("User.donorProfile", "donorProfile")
-      .where("User.email = :email", { email })
+      .createQueryBuilder('User')
+      .leftJoinAndSelect('User.donorProfile', 'donorProfile')
+      .where('User.email = :email', { email })
       .getOne();
   }
 
@@ -72,7 +72,7 @@ export class UsersService {
       ...updateUser,
     });
     if (!user?.id) {
-      throw new NotFoundException("User not found");
+      throw new NotFoundException('User not found');
     }
     if (updateUser.password) {
       user.password = await bcrypt.hash(updateUser.password, 10);
@@ -83,7 +83,7 @@ export class UsersService {
   async remove(id: string): Promise<void> {
     const result = await this.usersRepository.delete(id);
     if (result.affected === 0) {
-      throw new NotFoundException("User not found");
+      throw new NotFoundException('User not found');
     }
   }
 }

@@ -1,13 +1,13 @@
 /** @type {import('jest').Config} */
 module.exports = {
-  preset: "ts-jest",
-  testEnvironment: "node",
-  moduleFileExtensions: ["js", "json", "ts"],
-  rootDir: ".",
-  testRegex: ".*\\.spec\\.ts$",
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  moduleFileExtensions: ['js', 'json', 'ts'],
+  rootDir: '.',
+  testRegex: '.*\\.spec\\.ts$',
   transform: {
-    "^.+\\.(t|j)s$": "ts-jest",
+    '^.+\\.(t|j)s$': 'ts-jest',
   },
-  collectCoverageFrom: ["src/**/*.(t|j)s"],
-  coverageDirectory: "coverage",
+  collectCoverageFrom: ['src/**/*.(t|j)s'],
+  coverageDirectory: 'coverage',
 };

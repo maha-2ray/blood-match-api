@@ -6,22 +6,22 @@ import {
   IsString,
   IsBoolean,
   IsDateString,
-} from "class-validator";
+} from 'class-validator';
 import {
   BloodType,
   Region,
   AvailabilityStatus,
-} from "../entities/donor.entity";
-import { ApiProperty } from "@nestjs/swagger";
+} from '../entities/donor.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateDonorDto {
-  @ApiProperty({ example: "O+", enum: BloodType })
+  @ApiProperty({ example: 'O+', enum: BloodType })
   @IsEnum(BloodType)
   @IsNotEmpty()
   bloodType!: BloodType;
 
   @ApiProperty({
-    example: "AVAILABLE",
+    example: 'AVAILABLE',
     required: false,
     enum: AvailabilityStatus,
   })
@@ -39,32 +39,32 @@ export class CreateDonorDto {
   @IsOptional()
   longitude?: number;
 
-  @ApiProperty({ example: "123 Main St", required: false })
+  @ApiProperty({ example: '123 Main St', required: false })
   @IsString()
   @IsOptional()
   address?: string;
 
-  @ApiProperty({ example: "RIYADH", required: false, enum: Region })
+  @ApiProperty({ example: 'RIYADH', required: false, enum: Region })
   @IsEnum(Region)
   @IsOptional()
   region?: Region;
 
-  @ApiProperty({ example: "Near Central Hospital", required: false })
+  @ApiProperty({ example: 'Near Central Hospital', required: false })
   @IsString()
   @IsOptional()
   landMark?: string;
 
-  @ApiProperty({ example: "1990-05-15", required: false })
+  @ApiProperty({ example: '1990-05-15', required: false })
   @IsDateString()
   @IsOptional()
   dateOfBirth?: Date;
 
-  @ApiProperty({ example: "Male", required: false })
+  @ApiProperty({ example: 'Male', required: false })
   @IsString()
   @IsOptional()
   gender?: string;
 
-  @ApiProperty({ example: "No allergies", required: false })
+  @ApiProperty({ example: 'No allergies', required: false })
   @IsString()
   @IsOptional()
   medicalNotes?: string;
