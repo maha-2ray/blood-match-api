@@ -2,11 +2,11 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
-} from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { ChatMessage, ChatRoom } from "../entities/chat.entity";
-import { SendMessageDto } from "../dto/send-message.dto";
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { ChatMessage, ChatRoom } from '../entities/chat.entity';
+import { SendMessageDto } from '../dto/send-message.dto';
 
 @Injectable()
 export class ChatService {
@@ -69,8 +69,8 @@ export class ChatService {
         { senderId: userId, receiverId: otherUserId },
         { senderId: otherUserId, receiverId: userId },
       ],
-      order: { createdAt: "ASC" },
-      relations: ["sender", "receiver"],
+      order: { createdAt: 'ASC' },
+      relations: ['sender', 'receiver'],
       select: {
         sender: {
           id: true,
@@ -90,22 +90,22 @@ export class ChatService {
 
   async getMyChatRooms(userId: string): Promise<ChatRoom[]> {
     return this.chatRoomRepository
-      .createQueryBuilder("room")
-      .leftJoinAndSelect("room.user1", "user1")
-      .leftJoinAndSelect("room.user2", "user2")
-      .where("room.user1Id = :userId OR room.user2Id = :userId", { userId })
-      .orderBy("room.lastMessageAt", "DESC")
-      .addOrderBy("room.createdAt", "DESC")
+      .createQueryBuilder('room')
+      .leftJoinAndSelect('room.user1', 'user1')
+      .leftJoinAndSelect('room.user2', 'user2')
+      .where('room.user1Id = :userId OR room.user2Id = :userId', { userId })
+      .orderBy('room.lastMessageAt', 'DESC')
+      .addOrderBy('room.createdAt', 'DESC')
       .select([
-        "room.id",
-        "room.createdAt",
-        "room.lastMessageAt",
-        "user1.id",
-        "user1.firstName",
-        "user1.lastName",
-        "user2.id",
-        "user2.firstName",
-        "user2.lastName",
+        'room.id',
+        'room.createdAt',
+        'room.lastMessageAt',
+        'user1.id',
+        'user1.firstName',
+        'user1.lastName',
+        'user2.id',
+        'user2.firstName',
+        'user2.lastName',
       ])
       .getMany();
   }
@@ -116,7 +116,7 @@ export class ChatService {
       .update(ChatMessage)
       .set({ isRead: true })
       .where(
-        "senderId = :senderId AND receiverId = :receiverId AND isRead = false",
+        'senderId = :senderId AND receiverId = :receiverId AND isRead = false',
         {
           senderId,
           receiverId,

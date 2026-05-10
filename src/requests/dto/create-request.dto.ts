@@ -6,9 +6,9 @@ import {
   IsString,
   IsBoolean,
   IsDateString,
-} from "class-validator";
-import { UrgencyType } from "../entities/request.entity";
-import { ApiProperty } from "@nestjs/swagger";
+} from 'class-validator';
+import { UrgencyType } from '../entities/request.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateRequestDto {
   @ApiProperty({
@@ -21,8 +21,8 @@ export class CreateRequestDto {
   type?: UrgencyType;
 
   @ApiProperty({
-    example: "O+",
-    description: "Blood type required",
+    example: 'O+',
+    description: 'Blood type required',
   })
   @IsString()
   @IsNotEmpty()
@@ -37,7 +37,7 @@ export class CreateRequestDto {
   unitsNeeded?: number;
 
   @ApiProperty({
-    example: "John Doe",
+    example: 'John Doe',
   })
   @IsString()
   @IsNotEmpty()
@@ -52,14 +52,14 @@ export class CreateRequestDto {
   patientAge?: number;
 
   @ApiProperty({
-    example: "City Hospital",
+    example: 'City Hospital',
   })
   @IsString()
   @IsNotEmpty()
   hospitalName!: string;
 
   @ApiProperty({
-    example: "123 Main Street, City",
+    example: '123 Main Street, City',
   })
   @IsString()
   @IsNotEmpty()
@@ -82,14 +82,14 @@ export class CreateRequestDto {
   hospitalLongitude?: number;
 
   @ApiProperty({
-    example: "2024-01-15T10:30:00Z",
+    example: '2024-01-15T10:30:00Z',
   })
   @IsDateString()
   @IsNotEmpty()
   requiredBy!: Date;
 
   @ApiProperty({
-    example: "Emergency transfusion needed",
+    example: 'Emergency transfusion needed',
     required: false,
   })
   @IsString()
@@ -105,7 +105,7 @@ export class CreateRequestDto {
   isUrgent?: boolean;
 
   @ApiProperty({
-    example: "donor-123",
+    example: 'donor-123',
     required: false,
   })
   @IsString()

@@ -5,11 +5,11 @@ services:
       dockerfile: Dockerfile
     container_name: blood-match-api
     ports:
-      - "3000:3000"
+      - '3000:3000'
     env_file:
       - .env
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:3000/health || exit 1"]
+      test: ['CMD-SHELL', 'curl -fsS http://localhost:3000/health || exit 1']
       interval: 10s
       timeout: 3s
       retries: 10
@@ -26,11 +26,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d blood_match"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d blood_match']
       interval: 5s
       timeout: 3s
       retries: 20

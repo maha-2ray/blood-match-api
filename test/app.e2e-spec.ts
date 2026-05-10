@@ -1,7 +1,7 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { AppModule } from "./../src/app.module";
+import { Test, TestingModule } from '@nestjs/testing';
+import { AppModule } from './../src/app.module';
 
-describe("Application (e2e)", () => {
+describe('Application (e2e)', () => {
   let app: any;
 
   beforeEach(async () => {
@@ -13,7 +13,7 @@ describe("Application (e2e)", () => {
     await app.init();
   });
 
-  it("should start the application", () => {
+  it('should start the application', () => {
     expect(app).toBeDefined();
   });
 

@@ -2,16 +2,16 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
-} from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import {
   BloodRequest,
   RequestStatus,
   UrgencyType,
-} from "../entities/request.entity";
-import { CreateRequestDto } from "../dto/create-request.dto";
-import { UpdateRequestDto } from "../dto/update-request.dto";
+} from '../entities/request.entity';
+import { CreateRequestDto } from '../dto/create-request.dto';
+import { UpdateRequestDto } from '../dto/update-request.dto';
 
 @Injectable()
 export class RequestsService {
@@ -39,45 +39,45 @@ export class RequestsService {
     donorId?: string;
     urgencyType?: UrgencyType;
   }): Promise<BloodRequest[]> {
-    const query = this.requestsRepository.createQueryBuilder("request");
+    const query = this.requestsRepository.createQueryBuilder('request');
     if (filters?.status) {
-      query.andWhere("request.status = :status", { status: filters.status });
+      query.andWhere('request.status = :status', { status: filters.status });
     }
     if (filters?.bloodType) {
-      query.andWhere("request.bloodType = :bloodType", {
+      query.andWhere('request.bloodType = :bloodType', {
         bloodType: filters.bloodType,
       });
     }
     if (filters?.requesterId) {
-      query.andWhere("request.requesterId = :requesterId", {
+      query.andWhere('request.requesterId = :requesterId', {
         requesterId: filters.requesterId,
       });
     }
     if (filters?.donorId) {
-      query.andWhere("request.donorId = :donorId", {
+      query.andWhere('request.donorId = :donorId', {
         donorId: filters.donorId,
       });
     }
     if (filters?.urgencyType) {
-      query.andWhere("request.urgencyType = :urgencyType", {
+      query.andWhere('request.urgencyType = :urgencyType', {
         urgencyType: filters.urgencyType,
       });
     }
-    query.orderBy("request.createdAt", "DESC");
+    query.orderBy('request.createdAt', 'DESC');
 
     return query.getMany();
   }
 
   async findOne(id: string): Promise<BloodRequest> {
     const request = await this.requestsRepository
-      .createQueryBuilder("request")
-      .leftJoinAndSelect("request.requester", "requester")
-      .leftJoinAndSelect("request.donor", "donor")
-      .leftJoinAndSelect("donor.user", "donorUser")
-      .where("request.id = :id", { id })
+      .createQueryBuilder('request')
+      .leftJoinAndSelect('request.requester', 'requester')
+      .leftJoinAndSelect('request.donor', 'donor')
+      .leftJoinAndSelect('donor.user', 'donorUser')
+      .where('request.id = :id', { id })
       .getOne();
     if (!request) {
-      throw new NotFoundException("Request not found");
+      throw new NotFoundException('Request not found');
     }
 
     return request;
@@ -117,7 +117,7 @@ export class RequestsService {
 
     if (request.donorId && request.donorId !== userId) {
       throw new ForbiddenException(
-        "You are not authorized to update this request",
+        'You are not authorized to update this request',
       );
     }
 
@@ -138,7 +138,7 @@ export class RequestsService {
 
     if (request.requesterId !== userId) {
       throw new ForbiddenException(
-        "You can only assign donors to your own requests",
+        'You can only assign donors to your own requests',
       );
     }
 
