@@ -11,6 +11,7 @@ import { RegisterStartDto } from "./dto/register-start.dto";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
+import { throttle } from "rxjs";
 
 @ApiTags("auth")
 @Controller("auth")
@@ -25,6 +26,11 @@ export class AuthController {
   @Post("login")
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
+  }
+
+  @Post("refresh")
+  refreshToken(@Body("refreshToken") refreshToken: string) {
+    return this.authService.refreshToken(refreshToken);
   }
 
   @Get("profile")
