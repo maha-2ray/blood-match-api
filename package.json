@@ -12,7 +12,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "lint": "eslint \"src/**/*.ts\" --fix"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.17",
@@ -47,6 +48,9 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^22.0.0",
     "@types/supertest": "^7.2.0",
+    "@typescript-eslint/eslint-plugin": "^8.59.2",
+    "@typescript-eslint/parser": "^8.59.2",
+    "eslint": "^8.57.0",
     "husky": "^8.0.0",
     "jest": "^30.4.2",
     "supertest": "^7.2.2",
@@ -54,7 +58,6 @@
     "typescript": "^5.9.3"
   },
   "overrides": {
-    "ajv": "8.18.0",
     "picomatch": "4.0.4",
     "path-to-regexp": "8.4.0"
   }
