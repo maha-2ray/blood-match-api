@@ -136,4 +136,27 @@ export class AuthService {
       },
     };
   }
+
+  async refreshToken(refreshToken: string) {
+    try {
+      const decoded = this.jwtService.verify(refreshToken);
+      const user = await this.usersRepository.findOne({
+        where: { id: decoded.sub },
+      });
+
+      if (!user) {
+        throw new UnauthorizedException("User not found");
+      }
+      const payload = {
+        phone: decoded.phone,
+        email: decoded.email,
+        sub: decoded.sub,
+        role: decoded.role,
+      };
+      const accessToken = this.jwtService.sign(payload);
+      return { access_token: accessToken };
+    } catch (error) {
+      throw new UnauthorizedException("Invalid or expired refresh token");
+    }
+  }
 }
