@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   UnauthorizedException,
@@ -10,26 +9,23 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { RegisterStartDto } from './dto/register-start.dto';
-import { VerifyCodeDto } from './dto/verify-code.dto';
-import { SetPasscodeDto } from './dto/set-passcode.dto';
-import { OtpCode, OtpPurpose } from './otp-code.entity';
+import { OtpCode } from './otp-code.entity';
 import { User, UserRole } from '../users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    private readonly usersRepository: Repository<User>,
     @InjectRepository(OtpCode)
-    private otpCodeRepository: Repository<OtpCode>,
-    private jwtService: JwtService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async validateUser(phone: string, passcode: string): Promise<any> {
     const user = await this.usersRepository.findOne({
       where: { phone: phone },
     });
-    if (user && user.password) {
+    if (user?.password) {
       const isMatch = await bcrypt.compare(passcode, user.password);
       if (isMatch) {
         const { password, ...result } = user;
@@ -51,14 +47,11 @@ export class AuthService {
       if (existingUser.phone === registerStartDto.phone) {
         throw new ConflictException('Phone number already in use');
       }
-      if (
-        registerStartDto.email &&
-        existingUser.email === registerStartDto.email.trim().toLowerCase()
-      ) {
+      if (existingUser.email === registerStartDto.email?.trim().toLowerCase()) {
         throw new ConflictException('Email already in use');
       }
     }
-    const user = await this.usersRepository.create({
+    const user = this.usersRepository.create({
       email: registerStartDto.email?.trim().toLowerCase(),
       phone: registerStartDto.phone,
       fullName: registerStartDto.fullName,
@@ -156,6 +149,9 @@ export class AuthService {
       const accessToken = this.jwtService.sign(payload);
       return { access_token: accessToken };
     } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
   }

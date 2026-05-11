@@ -17,7 +17,7 @@ import { UpdateRequestDto } from '../dto/update-request.dto';
 export class RequestsService {
   constructor(
     @InjectRepository(BloodRequest)
-    private requestsRepository: Repository<BloodRequest>,
+    private readonly requestsRepository: Repository<BloodRequest>,
   ) {}
 
   async create(
@@ -103,7 +103,7 @@ export class RequestsService {
       donorId: updateData.donorId,
     });
 
-    const savedRequest = await this.requestsRepository.save(request!);
+    const savedRequest = await this.requestsRepository.save(request);
     return savedRequest;
   }
 
@@ -149,7 +149,7 @@ export class RequestsService {
   }
 
   async remove(id: string): Promise<void> {
-    const request = await this.findOne(id);
+    await this.findOne(id);
 
     await this.requestsRepository.delete(id);
   }
@@ -165,10 +165,6 @@ export class RequestsService {
     const rejectedRequests = await this.requestsRepository.count({
       where: { status: RequestStatus.REJECTED },
     });
-    // const criticalRequests = await this.requestsRepository.count({ where: { status: UrgencyType.CRITICAL } });
-    // const moderateRequests = await this.requestsRepository.count({ where: { status: UrgencyType.MODERATE } });
-    // const highRequests = await this.requestsRepository.count({ where: { urgencyType: UrgencyType.HIGH } });
-    // const lowRequests = await this.requestsRepository.count({ where: { status: UrgencyType.LOW } });
 
     return {
       totalRequests,

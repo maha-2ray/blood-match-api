@@ -13,7 +13,7 @@ import { UpdateDonorDto } from '../dto/update-donor.dto';
 export class DonorsService {
   constructor(
     @InjectRepository(Donor)
-    private donorsRepository: Repository<Donor>,
+    private readonly donorsRepository: Repository<Donor>,
   ) {}
 
   async create(userId: string, createDonorDto: CreateDonorDto): Promise<Donor> {

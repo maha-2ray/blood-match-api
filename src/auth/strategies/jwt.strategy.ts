@@ -7,8 +7,8 @@ import { UsersService } from '../../users/services/users.service';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private configService: ConfigService,
-    private usersService: UsersService,
+    private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
   ) {
     const jwtSecret = configService.get<string>('JWT_SECRET') || 'secret_key';
     if (!jwtSecret) {
@@ -34,6 +34,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       const { password, ...result } = user;
       return result;
     } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
       throw new UnauthorizedException('Invalid token');
     }
   }
