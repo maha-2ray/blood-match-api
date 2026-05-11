@@ -14,7 +14,7 @@ export class UsernameValidator implements ValidatorConstraintInterface {
     const user = await this.userRepository.findOne({
       where: { username } as any,
     });
-    return Promise.resolve(!user);
+    return !user;
   }
 
   defaultMessage(): string {
