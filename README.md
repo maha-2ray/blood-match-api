@@ -37,3 +37,25 @@ To stop services:
 ```bash
 docker compose down
 ```
+
+Migration commands
+
+# Auto-generate migration by diffing entities vs DB
+
+npm run migration:generate --name=CreateUsersTable
+
+# Run all pending migrations
+
+npm run migration:run
+
+# Revert last migration
+
+npm run migration:revert
+
+# Show migration status
+
+npm run migration:show
+
+# Create a blank migration
+
+npm run migration:create --name=AddIndexToUsers

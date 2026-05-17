@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { DonorsModule } from './donors/donors.module';
 import { RequestsModule } from './requests/requests.module';
 import { ChatModule } from './chat/chat.module';
+import { dataSourceOptions } from './db/datasource';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ChatModule } from './chat/chat.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    TypeOrmModule.forRoot(dataSourceOptions),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -22,7 +24,7 @@ import { ChatModule } from './chat/chat.module';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        entities: [],
         synchronize: configService.get('NODE_ENV') === 'development',
         logging: configService.get('NODE_ENV') === 'development',
       }),
