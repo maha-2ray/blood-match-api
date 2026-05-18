@@ -12,4 +12,4 @@ COPY . .
 
 EXPOSE 8080 9229
 
-CMD ["npm", "run", "start:dev"]
+CMD ["sh", "-c", "npm run migration:run && npm run start:dev"]
