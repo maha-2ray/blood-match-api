@@ -35,4 +35,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
 
 ENTRYPOINT ["dumb-init", "--"]
 
-CMD ["node", "dist/main.js", "npm run migration:run"]
+CMD ["node", "dist/main.js", "npm run migration:run && npm run start:prod"]
