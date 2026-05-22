@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "node dist/main.js",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "nest build",
     "audit:check": "npm audit --json",
     "start:dev": "nest start --watch",
     "prepare": "[ \"$NODE_ENV\" != \"production\" ] && husky install || true",
