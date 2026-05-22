@@ -10,7 +10,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly configService: ConfigService,
     private readonly usersService: UsersService,
   ) {
-    const jwtSecret = configService.get<string>('JWT_SECRET') || 'secret_key';
+    const jwtSecret = configService.get<string>('JWT_SECRET');
     if (!jwtSecret) {
       throw new Error('JWT_SECRET is not defined in environment variables');
     }
@@ -19,9 +19,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: jwtSecret,
-      issuer: configService.get<string>('JWT_ISSUER') || 'BLOOD-MATCH-API',
+      issuer: configService.get<string>('JWT_ISSUER'),
       audience:
-        configService.get<string>('JWT_AUDIENCE') || 'BLOOD-MATCH-API-CLIENT',
+        configService.get<string>('JWT_AUDIENCE'),
     });
   }
 
