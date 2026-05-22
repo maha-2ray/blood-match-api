@@ -5,8 +5,8 @@ services:
     region: singapore
     plan: free
 
-    buildCommand: npm ci --omit=dev && npm run build && echo "Build complete" && pwd && ls -la dist/ && cat dist/main.js | head -5
-    startCommand: bash -c 'pwd && ls -la && node dist/main.js'
+    buildCommand: npm ci --omit=dev && npm run build
+    startCommand: npm start
     healthCheckPath: /health
 
     envVars:
