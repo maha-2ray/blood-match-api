@@ -16,10 +16,24 @@ services:
         value: 3000
 
       # Database Configuration - Auto-linked from PostgreSQL
-      - key: DATABASE_URL
+      - key: DB_HOST
         fromDatabase:
           name: blood-match-db
-          property: connectionString
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: blood-match-db
+          property: port
+      - key: DB_USERNAME
+        fromDatabase:
+          name: blood-match-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: blood-match-db
+          property: password
+      - key: DB_NAME
+        value: blood_match
 
       # JWT Configuration
       - key: JWT_SECRET
