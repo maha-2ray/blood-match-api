@@ -64,7 +64,6 @@ export class AuthService {
       email: savedUser.email,
       fullName: savedUser.fullName,
       role: savedUser.role,
-      phoneVerifiedAt: savedUser.phoneVerifiedAt,
     };
   }
 
@@ -117,7 +116,6 @@ export class AuthService {
         fullName: user.fullName,
         role: user.role,
         phone: user.phone,
-        phoneVerifiedAt: user.phoneVerifiedAt,
       },
     };
   }
