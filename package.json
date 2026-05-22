@@ -7,7 +7,7 @@
     "build": "tsc -p tsconfig.build.json",
     "audit:check": "npm audit --json",
     "start:dev": "nest start --watch",
-    "prepare": "husky install",
+    "prepare": "[ \"$NODE_ENV\" != \"production\" ] && husky install || true",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
