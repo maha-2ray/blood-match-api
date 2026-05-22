@@ -1,0 +1,57 @@
+services:
+  - type: web
+    name: blood-match-api
+    runtime: node
+    region: singapore
+    plan: free
+
+    # Build configuration
+    buildCommand: npm ci && npm run build
+    startCommand: node dist/main.js
+
+    # Health check for Render monitoring
+    healthCheckPath: /health
+
+    # Environment variables
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+
+      # Database Configuration
+      - key: DB_HOST
+        fromDatabase:
+          name: blood-match-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: blood-match-db
+          property: port
+      - key: DB_USERNAME
+        fromDatabase:
+          name: blood-match-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: blood-match-db
+          property: password
+      - key: DB_NAME
+        value: blood_match
+
+      # JWT Configuration - Set these manually in Render Dashboard
+      - key: JWT_SECRET
+        sync: false # Must be set manually for security
+      - key: JWT_ISSUER
+        value: BLOOD_MATCH_API
+      - key: JWT_AUDIENCE
+        value: BLOOD_MATCH_API_CLIENT
+      - key: JWT_EXPIRES_IN
+        value: 1h
+
+databases:
+  - name: blood-match-db
+    databaseName: blood_match
+    user: postgres
+    region: singapore
+    plan: free
