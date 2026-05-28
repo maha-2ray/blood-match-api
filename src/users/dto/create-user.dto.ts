@@ -42,7 +42,7 @@ export class CreateUserDto {
   })
   @IsPhoneNumber()
   @IsNotEmpty()
-  phone!: string;
+  phone?: string;
 
   @ApiProperty({
     description: 'User role',

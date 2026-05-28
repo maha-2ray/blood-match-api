@@ -25,6 +25,9 @@ RUN npm ci --only=production && npm cache clean --force
 
 COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 
+# Copy package.json for migration scripts access
+COPY --chown=nodejs:nodejs package*.json ./
+
 USER nodejs
 
 EXPOSE 3000
@@ -35,4 +38,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
 
 ENTRYPOINT ["dumb-init", "--"]
 
-CMD ["node", "dist/main.js", "npm run migration:run"]
+CMD ["node", "dist/src/main.js"]
