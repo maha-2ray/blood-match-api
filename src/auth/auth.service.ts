@@ -36,9 +36,7 @@ export class AuthService {
 
   async registerUser(registerStartDto: RegisterStartDto) {
     const existingUser = await this.usersRepository.findOne({
-      where: [
-        { email: registerStartDto.email?.trim().toLowerCase() },
-      ],
+      where: [{ email: registerStartDto.email?.trim().toLowerCase() }],
     });
 
     if (existingUser) {
@@ -49,6 +47,7 @@ export class AuthService {
     const user = this.usersRepository.create({
       email: registerStartDto.email?.trim().toLowerCase(),
       fullName: registerStartDto.fullName,
+      ...(registerStartDto.phone && { phone: registerStartDto.phone }),
       role: UserRole.ADMIN,
       isActive: true,
     });

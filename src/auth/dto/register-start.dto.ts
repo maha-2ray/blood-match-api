@@ -4,12 +4,12 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsPhoneNumber,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '../../users/entities/user.entity';
 
 export class RegisterStartDto {
-
   @ApiProperty({ example: 'John Doe' })
   @IsString()
   @IsNotEmpty()
@@ -24,6 +24,11 @@ export class RegisterStartDto {
   @IsEmail()
   @IsOptional()
   email?: string;
+
+  @ApiProperty({ example: '+1234567890', required: false })
+  @IsPhoneNumber()
+  @IsOptional()
+  phone?: string;
 
   @ApiProperty({ enum: UserRole })
   @IsEnum(UserRole)

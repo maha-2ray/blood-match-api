@@ -28,6 +28,10 @@ COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 # Copy package.json for migration scripts access
 COPY --chown=nodejs:nodejs package*.json ./
 
+# Copy startup script
+COPY --chown=nodejs:nodejs docker-entrypoint.sh ./
+RUN chmod +x ./docker-entrypoint.sh
+
 USER nodejs
 
 EXPOSE 3000
@@ -38,4 +42,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
 
 ENTRYPOINT ["dumb-init", "--"]
 
-CMD ["node", "dist/src/main.js"]
+CMD ["./docker-entrypoint.sh"]
