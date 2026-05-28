@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "start": "node dist/src/main.js",
+    "start": "sh start.sh",
     "build": "tsc -p tsconfig.build.json",
     "audit:check": "npm audit --json",
     "start:dev": "nest start --watch",
