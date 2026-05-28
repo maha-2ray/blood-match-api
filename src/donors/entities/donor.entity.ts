@@ -22,11 +22,13 @@ export enum BloodType {
   O_NEGATIVE = 'O-',
 }
 
-export enum AvailabilityStatus {
-  AVAILABLE = 'available',
-  BUSY = 'busy',
-  UNAVAILABLE = 'unavailable',
-}
+export const AvailabilityStatus = {
+  AVAILABLE: true,
+  UNAVAILABLE: false,
+} as const;
+
+export type AvailabilityStatus =
+  (typeof AvailabilityStatus)[keyof typeof AvailabilityStatus];
 
 export enum Region {
   KMC = 'KMC',
@@ -57,8 +59,7 @@ export class Donor {
   bloodType: BloodType;
 
   @Column({
-    type: 'enum',
-    enum: AvailabilityStatus,
+    type: 'boolean',
     default: AvailabilityStatus.AVAILABLE,
   })
   availabilityStatus: AvailabilityStatus;
