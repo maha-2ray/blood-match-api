@@ -6,7 +6,8 @@ services:
     plan: free
 
     buildCommand: npm ci --omit=dev && npm run build
-    startCommand: npm start
+    preDeployCommand: npm run migration:run || true
+    startCommand: node dist/src/main.js
     healthCheckPath: /health
 
     envVars:
