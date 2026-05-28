@@ -20,12 +20,12 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(phone: string, passcode: string): Promise<any> {
+  async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersRepository.findOne({
-      where: { phone: phone },
+      where: { email: email },
     });
     if (user?.password) {
-      const isMatch = await bcrypt.compare(passcode, user.password);
+      const isMatch = await bcrypt.compare(password, user.password);
       if (isMatch) {
         const { password, ...result } = user;
         return result;
@@ -37,22 +37,17 @@ export class AuthService {
   async registerUser(registerStartDto: RegisterStartDto) {
     const existingUser = await this.usersRepository.findOne({
       where: [
-        { phone: registerStartDto.phone },
         { email: registerStartDto.email?.trim().toLowerCase() },
       ],
     });
 
     if (existingUser) {
-      if (existingUser.phone === registerStartDto.phone) {
-        throw new ConflictException('Phone number already in use');
-      }
       if (existingUser.email === registerStartDto.email?.trim().toLowerCase()) {
         throw new ConflictException('Email already in use');
       }
     }
     const user = this.usersRepository.create({
       email: registerStartDto.email?.trim().toLowerCase(),
-      phone: registerStartDto.phone,
       fullName: registerStartDto.fullName,
       role: UserRole.ADMIN,
       isActive: true,
@@ -69,17 +64,14 @@ export class AuthService {
       email: savedUser.email,
       fullName: savedUser.fullName,
       role: savedUser.role,
-      phone: savedUser.phone,
-      phoneVerifiedAt: savedUser.phoneVerifiedAt,
     };
   }
 
   async login(loginDto: LoginDto) {
     let user: User | null = null;
-    if (loginDto.phone || loginDto.email) {
+    if (loginDto.email) {
       user = await this.usersRepository.findOne({
         where: {
-          phone: loginDto.phone,
           email: loginDto.email?.trim().toLowerCase(),
         },
       });
@@ -88,7 +80,7 @@ export class AuthService {
         throw new UnauthorizedException('Invalid credentials');
       }
 
-      if (!user.phone || !user.email) {
+      if (!user.email) {
         throw new UnauthorizedException('Invalid credentials');
       }
     }
@@ -106,7 +98,7 @@ export class AuthService {
     }
 
     const payload = {
-      phone: user.phone,
+      fullName: user.fullName,
       email: user.email,
       sub: user.id,
       role: user.role,
@@ -124,7 +116,6 @@ export class AuthService {
         fullName: user.fullName,
         role: user.role,
         phone: user.phone,
-        phoneVerifiedAt: user.phoneVerifiedAt,
       },
     };
   }
@@ -140,7 +131,7 @@ export class AuthService {
         throw new UnauthorizedException('User not found');
       }
       const payload = {
-        phone: decoded.phone,
+        fullName: decoded.fullName,
         email: decoded.email,
         sub: decoded.sub,
         role: decoded.role,

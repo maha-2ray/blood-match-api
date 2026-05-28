@@ -7,6 +7,7 @@ import { DonorsModule } from './donors/donors.module';
 import { RequestsModule } from './requests/requests.module';
 import { ChatModule } from './chat/chat.module';
 import { dataSourceOptions } from './db/datasource';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { dataSourceOptions } from './db/datasource';
       }),
       inject: [ConfigService],
     }),
+    HealthModule,
     AuthModule,
     UsersModule,
     DonorsModule,

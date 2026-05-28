@@ -22,7 +22,7 @@ services:
     image: postgres:16-alpine
     container_name: blood-match-db
     environment:
-      POSTGRES_DB: blood_match
+      POSTGRES_DB: blood_matchgit 
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:

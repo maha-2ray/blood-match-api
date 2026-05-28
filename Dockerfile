@@ -1,15 +1,38 @@
-## To be used for DEVELOPMENT purposes only
-FROM node:22-alpine
-
-RUN apk add --no-cache make gcc g++ python3 git
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --build-from-source
+
+RUN npm ci
 
 COPY . .
 
-EXPOSE 8080 9229
+RUN npm run build
 
-CMD ["sh", "-c", "npm run migration:run && npm run start:dev"]
+FROM node:22-alpine
+
+WORKDIR /app
+
+RUN apk add --no-cache dumb-init curl
+
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nodejs -u 1001
+
+COPY package*.json ./
+
+RUN npm ci --only=production && npm cache clean --force
+
+COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
+
+USER nodejs
+
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:3000/health || exit 1
+
+ENTRYPOINT ["dumb-init", "--"]
+
+CMD ["node", "dist/main.js", "npm run migration:run"]

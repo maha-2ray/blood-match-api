@@ -28,8 +28,8 @@ export class User {
   @Column()
   fullName: string;
 
-  @Column({ unique: true })
-  phone: string;
+  @Column({ unique: true, nullable: true })
+  phone?: string;
 
   @Column({
     type: 'enum',
@@ -40,9 +40,6 @@ export class User {
 
   @Column({ default: true })
   isActive: boolean;
-
-  @Column({ type: 'timestamp', nullable: true })
-  phoneVerifiedAt?: Date;
 
   @OneToOne(() => Donor, (donor) => donor.user)
   donorProfile: Donor;

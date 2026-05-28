@@ -1,0 +1,53 @@
+services:
+  - type: web
+    name: blood-match-api
+    runtime: node
+    region: singapore
+    plan: free
+
+    buildCommand: npm ci --omit=dev && npm run build
+    preDeployCommand: npm run migration:run || true
+    startCommand: npm start
+    healthCheckPath: /health
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+
+      # Database Configuration - Auto-linked from PostgreSQL
+      - key: DB_HOST
+        fromDatabase:
+          name: blood-match-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: blood-match-db
+          property: port
+      - key: DB_USERNAME
+        fromDatabase:
+          name: blood-match-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: blood-match-db
+          property: password
+      - key: DB_NAME
+        value: blood_match
+
+      # JWT Configuration
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_ISSUER
+        value: BLOOD_MATCH_API
+      - key: JWT_AUDIENCE
+        value: BLOOD_MATCH_API_CLIENT
+      - key: JWT_EXPIRES_IN
+        value: 1h
+
+databases:
+  - name: blood-match-db
+    databaseName: blood_match
+    region: singapore
+    plan: free
