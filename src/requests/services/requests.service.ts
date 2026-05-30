@@ -1,6 +1,7 @@
 import {
   Injectable,
   NotFoundException,
+  ConflictException,
   ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,12 +13,14 @@ import {
 } from '../entities/request.entity';
 import { CreateRequestDto } from '../dto/create-request.dto';
 import { UpdateRequestDto } from '../dto/update-request.dto';
+import { DonorsService } from '../../donors/services/donors.service';
 
 @Injectable()
 export class RequestsService {
   constructor(
     @InjectRepository(BloodRequest)
     private readonly requestsRepository: Repository<BloodRequest>,
+    private readonly donorsService: DonorsService,
   ) {}
 
   async create(
@@ -88,6 +91,7 @@ export class RequestsService {
     updateData: UpdateRequestDto,
   ): Promise<BloodRequest> {
     const request = await this.requestsRepository.preload({
+      id,
       type: updateData.type,
       bloodType: updateData.bloodType,
       unitsNeeded: updateData.unitsNeeded,
@@ -99,9 +103,11 @@ export class RequestsService {
       hospitalLongitude: updateData.hospitalLongitude,
       requiredBy: updateData.requiredBy,
       notes: updateData.notes,
-      isUrgent: updateData.isUrgent,
-      donorId: updateData.donorId,
     });
+
+    if (!request) {
+      throw new NotFoundException('Request not found');
+    }
 
     const savedRequest = await this.requestsRepository.save(request);
     return savedRequest;
@@ -110,16 +116,9 @@ export class RequestsService {
   async updateStatus(
     id: string,
     status: RequestStatus,
-    userId: string,
     rejectionReason?: string,
   ): Promise<BloodRequest> {
     const request = await this.findOne(id);
-
-    if (request.donorId && request.donorId !== userId) {
-      throw new ForbiddenException(
-        'You are not authorized to update this request',
-      );
-    }
 
     request.status = status;
     if (rejectionReason) {
@@ -129,21 +128,31 @@ export class RequestsService {
     return this.requestsRepository.save(request);
   }
 
-  async assignDonor(
-    id: string,
-    donorId: string,
-    userId: string,
-  ): Promise<BloodRequest> {
+  async acceptRequest(id: string, userId: string): Promise<BloodRequest> {
     const request = await this.findOne(id);
+    const donor = await this.donorsService.findByUserId(userId);
 
-    if (request.requesterId !== userId) {
-      throw new ForbiddenException(
-        'You can only assign donors to your own requests',
-      );
+    if (request.requesterId === userId) {
+      throw new ForbiddenException('You cannot accept your own request');
     }
+
+    if (request.status !== RequestStatus.PENDING) {
+      throw new ConflictException('Only pending requests can be accepted');
+    }
+
+    request.donorId = donor.id;
+    request.status = RequestStatus.ACCEPTED;
+    request.rejectionReason = null;
+
+    return this.requestsRepository.save(request);
+  }
+
+  async assignDonor(id: string, donorId: string): Promise<BloodRequest> {
+    const request = await this.findOne(id);
 
     request.donorId = donorId;
     request.status = RequestStatus.ACCEPTED;
+    request.rejectionReason = null;
 
     return this.requestsRepository.save(request);
   }

@@ -29,6 +29,7 @@ export class RequestsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
+  @Roles(UserRole.REQUESTER)
   @ApiBearerAuth()
   create(@Request() req: any, @Body() createRequestDto: CreateRequestDto) {
     return this.requestsService.create(req.user.id, createRequestDto);
@@ -101,30 +102,30 @@ export class RequestsController {
 
   @Patch(':id/status')
   @UseGuards(JwtAuthGuard)
+  @Roles(UserRole.ADMIN)
   @ApiBearerAuth()
   updateStatus(
     @Param('id') id: string,
     @Body('status') status: RequestStatus,
     @Body('rejectionReason') rejectionReason: string,
-    @Request() req: any,
   ) {
-    return this.requestsService.updateStatus(
-      id,
-      status,
-      req.user.id,
-      rejectionReason,
-    );
+    return this.requestsService.updateStatus(id, status, rejectionReason);
+  }
+
+  @Patch(':id/accept')
+  @UseGuards(JwtAuthGuard)
+  @Roles(UserRole.DONOR)
+  @ApiBearerAuth()
+  acceptRequest(@Param('id') id: string, @Request() req: any) {
+    return this.requestsService.acceptRequest(id, req.user.id);
   }
 
   @Patch(':id/assign-donor')
   @UseGuards(JwtAuthGuard)
+  @Roles(UserRole.ADMIN)
   @ApiBearerAuth()
-  assignDonor(
-    @Param('id') id: string,
-    @Body('donorId') donorId: string,
-    @Request() req: any,
-  ) {
-    return this.requestsService.assignDonor(id, donorId, req.user.id);
+  assignDonor(@Param('id') id: string, @Body('donorId') donorId: string) {
+    return this.requestsService.assignDonor(id, donorId);
   }
 
   @Delete(':id')
