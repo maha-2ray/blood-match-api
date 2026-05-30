@@ -96,19 +96,18 @@ export class CreateRequestDto {
   @IsOptional()
   notes?: string;
 
-  @ApiProperty({
-    example: true,
-    required: false,
-  })
-  @IsBoolean()
-  @IsOptional()
-  isUrgent?: boolean;
-
-  @ApiProperty({
-    example: 'donor-123',
-    required: false,
-  })
+  @ApiProperty({example: "Mother", required: false})
   @IsString()
   @IsOptional()
-  donorId?: string;
+  relationshipToPatient?: string;
+
+   @ApiProperty({example: "1234567890", required: false})
+   @IsString()
+   @IsOptional()
+   contactNumber?: string;
+
+   @ApiProperty({example: "Mariama", required: false})
+   @IsString()
+   @IsOptional()
+   contactName?: string;
 }
