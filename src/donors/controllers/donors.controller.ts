@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { DonorsService } from '../services/donors.service';
 import { CreateDonorDto } from '../dto/create-donor.dto';
+import { UpdateDonorDto } from '../dto/update-donor.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { ApiTags, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { AvailabilityStatus, BloodType } from '../entities/donor.entity';
@@ -61,6 +62,13 @@ export class DonorsController {
   @ApiBearerAuth()
   getMyProfile(@Request() req: any) {
     return this.donorsService.findByUserId(req.user.id);
+  }
+
+  @Patch('profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  updateMyProfile(@Request() req: any, @Body() updateData: UpdateDonorDto) {
+    return this.donorsService.updateByUserId(req.user.id, updateData);
   }
 
   @Get('nearby')
@@ -115,7 +123,7 @@ export class DonorsController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  update(@Param('id') id: string, @Body() updateData: Partial<any>) {
+  update(@Param('id') id: string, @Body() updateData: UpdateDonorDto) {
     return this.donorsService.update(id, updateData);
   }
 

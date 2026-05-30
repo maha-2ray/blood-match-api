@@ -114,7 +114,7 @@ export class RequestsController {
 
   @Patch(':id/accept')
   @UseGuards(JwtAuthGuard)
-  @Roles(UserRole.DONOR)
+  @Roles(UserRole.DONOR, UserRole.ADMIN)
   @ApiBearerAuth()
   acceptRequest(@Param('id') id: string, @Request() req: any) {
     return this.requestsService.acceptRequest(id, req.user.id);

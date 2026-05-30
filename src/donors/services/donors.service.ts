@@ -97,6 +97,15 @@ export class DonorsService {
     return this.donorsRepository.save(donor);
   }
 
+  async updateByUserId(
+    userId: string,
+    updateData: UpdateDonorDto,
+  ): Promise<Donor> {
+    const donor = await this.findByUserId(userId);
+    Object.assign(donor, updateData);
+    return this.donorsRepository.save(donor);
+  }
+
   async updateAvailability(
     userId: string,
     status: AvailabilityStatus,
