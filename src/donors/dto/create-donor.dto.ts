@@ -15,17 +15,26 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateDonorDto {
+  @ApiProperty({ example: 'Muhammed', required: true })
+  @IsString()
+  @IsNotEmpty()
+  fullName!: string;
+
+  @ApiProperty({ example: 'your@email.com', required: false })
+  @IsString()
+  @IsOptional()
+  email?: string;
+
   @ApiProperty({ example: 'O+', enum: BloodType })
   @IsEnum(BloodType)
   @IsNotEmpty()
   bloodType!: BloodType;
 
   @ApiProperty({
-    example: 'AVAILABLE',
+    example: true,
     required: false,
-    enum: AvailabilityStatus,
   })
-  @IsEnum(AvailabilityStatus)
+  @IsBoolean()
   @IsOptional()
   availabilityStatus?: AvailabilityStatus;
 
@@ -68,4 +77,9 @@ export class CreateDonorDto {
   @IsString()
   @IsOptional()
   medicalNotes?: string;
+
+  @ApiProperty({ example: '+22000000000', required: false })
+  @IsString()
+  @IsOptional()
+  phoneNumber?: string;
 }
