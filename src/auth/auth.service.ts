@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   UnauthorizedException,
@@ -9,15 +10,27 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { RegisterStartDto } from './dto/register-start.dto';
-import { OtpCode } from './otp-code.entity';
+import { VerifyCodeDto } from './dto/verify-code.dto';
+import { OtpCode, OtpPurpose } from './otp-code.entity';
+import { PendingRegistration } from './pending-registration.entity';
 import { User, UserRole } from '../users/entities/user.entity';
+import { MailService } from '../mail/mail.service';
+import { randomInt } from 'crypto';
 
 @Injectable()
 export class AuthService {
+  private readonly otpExpiryMinutes = 10;
+  private readonly maxOtpAttempts = 5;
+
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    @InjectRepository(OtpCode)
+    private readonly otpCodesRepository: Repository<OtpCode>,
+    @InjectRepository(PendingRegistration)
+    private readonly pendingRegistrationsRepository: Repository<PendingRegistration>,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -35,28 +48,157 @@ export class AuthService {
   }
 
   async registerUser(registerStartDto: RegisterStartDto) {
+    const email = registerStartDto.email.trim().toLowerCase();
+    const phone = registerStartDto.phone?.trim();
+    const role = registerStartDto.role ?? UserRole.DONOR;
+
+    if (role === UserRole.ADMIN) {
+      throw new BadRequestException('Admin accounts cannot self-register');
+    }
+
     const existingUser = await this.usersRepository.findOne({
-      where: [{ email: registerStartDto.email?.trim().toLowerCase() }],
+      where: [{ email }, ...(phone ? [{ phone }] : [])],
     });
 
     if (existingUser) {
-      if (existingUser.email === registerStartDto.email?.trim().toLowerCase()) {
+      if (existingUser.email === email) {
         throw new ConflictException('Email already in use');
       }
+      throw new ConflictException('Phone already in use');
     }
-    const user = this.usersRepository.create({
-      email: registerStartDto.email?.trim().toLowerCase(),
+
+    const password = await bcrypt.hash(registerStartDto.password, 10);
+    const pendingExpiresAt = this.minutesFromNow(this.otpExpiryMinutes);
+
+    const existingPending = await this.pendingRegistrationsRepository.findOneBy(
+      { email },
+    );
+
+    const pendingRegistration =
+      existingPending ??
+      this.pendingRegistrationsRepository.create({
+        email,
+      });
+
+    Object.assign(pendingRegistration, {
       fullName: registerStartDto.fullName,
-      ...(registerStartDto.phone && { phone: registerStartDto.phone }),
-      role: UserRole.ADMIN,
-      isActive: true,
+      password,
+      phone,
+      role,
+      expiresAt: pendingExpiresAt,
     });
 
-    if (registerStartDto.password) {
-      user.password = await bcrypt.hash(registerStartDto.password, 10);
+    await this.pendingRegistrationsRepository.save(pendingRegistration);
+
+    await this.otpCodesRepository.update(
+      { email, purpose: OtpPurpose.REGISTER, isUsed: false },
+      { isUsed: true },
+    );
+
+    const code = this.generateSixDigitCode();
+    const codeHash = await bcrypt.hash(code, 10);
+
+    await this.otpCodesRepository.save(
+      this.otpCodesRepository.create({
+        email,
+        purpose: OtpPurpose.REGISTER,
+        codeHash,
+        expiresAt: this.minutesFromNow(this.otpExpiryMinutes),
+      }),
+    );
+
+    await this.mailService.sendRegistrationCode(email, code);
+
+    return {
+      message: 'Verification code sent to email',
+      email,
+    };
+  }
+
+  async verifyRegistrationCode(verifyCodeDto: VerifyCodeDto) {
+    const email = verifyCodeDto.email.trim().toLowerCase();
+    const pendingRegistration =
+      await this.pendingRegistrationsRepository.findOneBy({ email });
+
+    if (!pendingRegistration || pendingRegistration.expiresAt < new Date()) {
+      throw new BadRequestException(
+        'Registration request expired. Please register again.',
+      );
     }
 
-    const savedUser = await this.usersRepository.save(user);
+    const otpCode = await this.otpCodesRepository.findOne({
+      where: {
+        email,
+        purpose: OtpPurpose.REGISTER,
+        isUsed: false,
+      },
+      order: { createdAt: 'DESC' },
+    });
+
+    if (!otpCode || otpCode.expiresAt < new Date()) {
+      throw new BadRequestException(
+        'Verification code expired. Please request a new code.',
+      );
+    }
+
+    if (otpCode.attempts >= this.maxOtpAttempts) {
+      throw new BadRequestException(
+        'Too many invalid attempts. Please request a new code.',
+      );
+    }
+
+    const isCodeValid = await bcrypt.compare(
+      verifyCodeDto.code,
+      otpCode.codeHash,
+    );
+
+    if (!isCodeValid) {
+      otpCode.attempts += 1;
+      await this.otpCodesRepository.save(otpCode);
+      throw new BadRequestException('Invalid verification code');
+    }
+
+    const savedUser = await this.usersRepository.manager.transaction(
+      async (manager) => {
+        const usersRepository = manager.getRepository(User);
+        const otpCodesRepository = manager.getRepository(OtpCode);
+        const pendingRegistrationsRepository =
+          manager.getRepository(PendingRegistration);
+
+        const existingUser = await usersRepository.findOne({
+          where: [
+            { email },
+            ...(pendingRegistration.phone
+              ? [{ phone: pendingRegistration.phone }]
+              : []),
+          ],
+        });
+
+        if (existingUser) {
+          throw new ConflictException('User already exists');
+        }
+
+        const user = usersRepository.create({
+          email: pendingRegistration.email,
+          fullName: pendingRegistration.fullName,
+          password: pendingRegistration.password,
+          ...(pendingRegistration.phone && {
+            phone: pendingRegistration.phone,
+          }),
+          role: pendingRegistration.role,
+          isActive: true,
+        });
+
+        const createdUser = await usersRepository.save(user);
+        otpCode.isUsed = true;
+        await otpCodesRepository.save(otpCode);
+        await pendingRegistrationsRepository.delete({
+          id: pendingRegistration.id,
+        });
+
+        return createdUser;
+      },
+    );
 
     return {
       id: savedUser.id,
@@ -143,5 +285,13 @@ export class AuthService {
       }
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
+  }
+
+  private generateSixDigitCode(): string {
+    return randomInt(100000, 1000000).toString();
+  }
+
+  private minutesFromNow(minutes: number): Date {
+    return new Date(Date.now() + minutes * 60 * 1000);
   }
 }

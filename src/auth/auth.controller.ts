@@ -8,10 +8,10 @@ import {
 } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { RegisterStartDto } from './dto/register-start.dto';
+import { VerifyCodeDto } from './dto/verify-code.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { throttle } from 'rxjs';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -21,6 +21,11 @@ export class AuthController {
   @Post('register')
   registerUser(@Body() registerStartDto: RegisterStartDto) {
     return this.authService.registerUser(registerStartDto);
+  }
+
+  @Post('verify-code')
+  verifyRegistrationCode(@Body() verifyCodeDto: VerifyCodeDto) {
+    return this.authService.verifyRegistrationCode(verifyCodeDto);
   }
 
   @Post('login')

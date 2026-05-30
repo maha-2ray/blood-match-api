@@ -17,13 +17,13 @@ export class RegisterStartDto {
 
   @ApiProperty({ example: '123456' })
   @IsString()
-  @IsOptional()
-  password?: string;
+  @IsNotEmpty()
+  password!: string;
 
   @ApiProperty({ example: 'You@example.com' })
   @IsEmail()
-  @IsOptional()
-  email?: string;
+  @IsNotEmpty()
+  email!: string;
 
   @ApiProperty({ example: '+1234567890', required: false })
   @IsPhoneNumber()

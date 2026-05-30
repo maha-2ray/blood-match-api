@@ -9,12 +9,15 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { OtpCode } from './otp-code.entity';
 import { AuthService } from './auth.service';
 import { User } from '../users/entities/user.entity';
+import { PendingRegistration } from './pending-registration.entity';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
     UsersModule,
+    MailModule,
     PassportModule,
-    TypeOrmModule.forFeature([User, OtpCode]),
+    TypeOrmModule.forFeature([User, OtpCode, PendingRegistration]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

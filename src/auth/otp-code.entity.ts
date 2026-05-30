@@ -16,7 +16,7 @@ export class OtpCode {
   id!: string;
 
   @Column()
-  phone!: string;
+  email!: string;
 
   @Column({
     type: 'enum',
