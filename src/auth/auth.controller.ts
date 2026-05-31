@@ -23,8 +23,8 @@ export class AuthController {
     return this.authService.registerUser(registerStartDto);
   }
 
-  @Post('verify-code')
-  verifyRegistrationCode(@Body() verifyCodeDto: VerifyCodeDto) {
+  @Post('verify-email')
+  verifyEmail(@Body() verifyCodeDto: VerifyCodeDto) {
     return this.authService.verifyRegistrationCode(verifyCodeDto);
   }
 
