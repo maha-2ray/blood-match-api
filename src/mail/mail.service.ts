@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 
@@ -25,6 +25,9 @@ export class MailService {
       port,
       secure: port === 465,
       auth: { user, pass },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
     });
   }
 
@@ -38,12 +41,22 @@ export class MailService {
       return;
     }
 
-    await this.transporter.sendMail({
-      from,
-      to: email,
-      subject: 'Your Blood Match verification code',
-      text: `Your verification code is ${code}. It expires in 10 minutes.`,
-      html: `<p>Your verification code is <strong>${code}</strong>.</p><p>It expires in 10 minutes.</p>`,
-    });
+    try {
+      await this.transporter.sendMail({
+        from,
+        to: email,
+        subject: 'Your Blood Match verification code',
+        text: `Your verification code is ${code}. It expires in 10 minutes.`,
+        html: `<p>Your verification code is <strong>${code}</strong>.</p><p>It expires in 10 minutes.</p>`,
+      });
+    } catch (error) {
+      this.logger.error(
+        `Failed to send registration email to ${email}`,
+        error instanceof Error ? error.stack : String(error),
+      );
+      throw new ServiceUnavailableException(
+        'Unable to send verification email. Please try again.',
+      );
+    }
   }
 }
