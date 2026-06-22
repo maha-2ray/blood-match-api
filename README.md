@@ -59,3 +59,20 @@ npm run migration:show
 # Create a blank migration
 
 npm run migration:create --name=AddIndexToUsers
+
+# Seed or refresh the admin user
+
+Set the admin credentials in your environment first:
+
+- `ADMIN_EMAIL`
+- `ADMIN_PASSWORD`
+- `ADMIN_FULL_NAME`
+- `ADMIN_PHONE` optional
+
+Then run:
+
+```bash
+npm run seed:admin
+```
+
+The seed is idempotent for the configured admin email and will create or update that user with the `admin` role.
