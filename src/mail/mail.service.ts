@@ -16,10 +16,11 @@ export class MailService {
     this.brevoApiKey = this.configService.get<string>(process.env.
     BREVO_API_KEY) || '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';
 
-    const host = this.configService.get<string>(process.env.SMTP_HOST);
-    const port = Number(this.configService.get<string>(process.env.SMTP_PORT) || 587);
-    const user = this.configService.get<string>(process.env.SMTP_USER);
-    const pass = this.configService.get<string>(process.env.SMTP_PASS);
+    const host = this.configService.get<string>("SMTP_HOST") || 'smtp-relay.brevo.com';
+    const port = Number(this.configService.get<string>("SMTP_PORT") || 587);
+    const user = this.configService.get<string>("SMTP_USER") || 'acfbae001@smtp-brevo.com';
+    const pass =
+      this.configService.get<string>('SMTP_PASS') || 'VpAO0mYfgbCQDBXU';
 
     if (this.deliveryMode === 'log') {
       this.logger.warn(
