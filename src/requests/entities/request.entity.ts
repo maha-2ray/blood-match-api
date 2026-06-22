@@ -76,9 +76,6 @@ export class BloodRequest {
   @Column({ type: 'float', nullable: true })
   hospitalLongitude: number;
 
-  // @Column({ type: 'timestamp' })
-  // requiredBy: Date;
-
   @Column({ type: 'text', nullable: true })
   notes: string;
 

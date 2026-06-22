@@ -4,8 +4,6 @@ import {
   IsOptional,
   IsNumber,
   IsString,
-  IsBoolean,
-  IsDateString,
 } from 'class-validator';
 import { UrgencyType } from '../entities/request.entity';
 import { ApiProperty } from '@nestjs/swagger';
@@ -18,7 +16,7 @@ export class CreateRequestDto {
   })
   @IsEnum(UrgencyType)
   @IsOptional()
-  urgencyType?: UrgencyType;
+  type?: UrgencyType;
 
   @ApiProperty({
     example: 'O+',
@@ -80,13 +78,6 @@ export class CreateRequestDto {
   @IsNumber()
   @IsOptional()
   hospitalLongitude?: number;
-
-  // @ApiProperty({
-  //   example: '2024-01-15T10:30:00Z',
-  // })
-  // @IsDateString()
-  // @IsNotEmpty()
-  // requiredBy!: Date;
 
   @ApiProperty({
     example: 'Emergency transfusion needed',
