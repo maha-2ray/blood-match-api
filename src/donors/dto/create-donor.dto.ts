@@ -25,6 +25,11 @@ export class CreateDonorDto {
   @IsOptional()
   email?: string;
 
+  @ApiProperty({ example: '+22000000000', required: false })
+  @IsString()
+  @IsOptional()
+  phone?: string;
+
   @ApiProperty({ example: 'O+', enum: BloodType })
   @IsEnum(BloodType)
   @IsNotEmpty()

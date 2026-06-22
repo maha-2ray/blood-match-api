@@ -58,6 +58,15 @@ export class Donor {
   })
   bloodType: BloodType;
 
+  @Column({ nullable: true })
+  email: string;
+
+  @Column({ nullable: true })
+  phone: string;
+
+  @Column({ nullable: true })
+  fullName: string; 
+
   @Column({
     type: 'boolean',
     default: AvailabilityStatus.AVAILABLE,
