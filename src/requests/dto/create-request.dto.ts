@@ -50,6 +50,14 @@ export class CreateRequestDto {
   patientAge?: number;
 
   @ApiProperty({
+    example: 'Male',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  gender?: string;
+
+  @ApiProperty({
     example: 'City Hospital',
   })
   @IsString()
@@ -87,18 +95,18 @@ export class CreateRequestDto {
   @IsOptional()
   notes?: string;
 
-  @ApiProperty({example: "Mother", required: false})
+  @ApiProperty({ example: 'Mother', required: false })
   @IsString()
   @IsOptional()
   relationshipToPatient?: string;
 
-   @ApiProperty({example: "1234567890", required: false})
-   @IsString()
-   @IsOptional()
-   contactNumber?: string;
+  @ApiProperty({ example: '1234567890', required: false })
+  @IsString()
+  @IsOptional()
+  contactNumber?: string;
 
-   @ApiProperty({example: "Mariama", required: false})
-   @IsString()
-   @IsOptional()
-   contactName?: string;
+  @ApiProperty({ example: 'Mariama', required: false })
+  @IsString()
+  @IsOptional()
+  contactName?: string;
 }

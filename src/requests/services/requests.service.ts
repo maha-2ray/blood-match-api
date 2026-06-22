@@ -97,6 +97,7 @@ export class RequestsService {
       unitsNeeded: updateData.unitsNeeded,
       patientName: updateData.patientName,
       patientAge: updateData.patientAge,
+      gender: updateData.gender,
       hospitalName: updateData.hospitalName,
       hospitalAddress: updateData.hospitalAddress,
       hospitalLatitude: updateData.hospitalLatitude,

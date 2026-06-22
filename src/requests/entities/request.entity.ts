@@ -64,6 +64,9 @@ export class BloodRequest {
   @Column({ nullable: true })
   patientAge: number;
 
+  @Column({ nullable: true })
+  gender: string;
+
   @Column()
   hospitalName: string;
 
