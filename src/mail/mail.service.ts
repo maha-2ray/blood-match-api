@@ -64,8 +64,7 @@ export class MailService {
   async sendRegistrationCode(email: string, code: string): Promise<void> {
     const from =
       this.configService.get<string>(
-        'Blood Match <touraymuhammed2000@gmail.com>',
-      ) || this.configService.get<string>('acfbae001@smtp-brevo.com');
+        'MAIL_FROM') || this.configService.get<string>('acfbae001@smtp-brevo.com');
 
     if (this.deliveryMode === 'log') {
       this.logRegistrationCode(email, code);
