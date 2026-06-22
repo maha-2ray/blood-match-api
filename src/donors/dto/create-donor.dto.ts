@@ -82,4 +82,9 @@ export class CreateDonorDto {
   @IsString()
   @IsOptional()
   phoneNumber?: string;
+
+  @ApiProperty({ example: "1990-05-15", required: false })
+  @IsDateString()
+  @IsOptional()
+  lastDonationDate?: Date; 
 }
