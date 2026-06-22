@@ -18,7 +18,7 @@ export class CreateRequestDto {
   })
   @IsEnum(UrgencyType)
   @IsOptional()
-  type?: UrgencyType;
+  urgencyType?: UrgencyType;
 
   @ApiProperty({
     example: 'O+',
@@ -81,12 +81,12 @@ export class CreateRequestDto {
   @IsOptional()
   hospitalLongitude?: number;
 
-  @ApiProperty({
-    example: '2024-01-15T10:30:00Z',
-  })
-  @IsDateString()
-  @IsNotEmpty()
-  requiredBy!: Date;
+  // @ApiProperty({
+  //   example: '2024-01-15T10:30:00Z',
+  // })
+  // @IsDateString()
+  // @IsNotEmpty()
+  // requiredBy!: Date;
 
   @ApiProperty({
     example: 'Emergency transfusion needed',

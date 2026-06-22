@@ -101,7 +101,7 @@ export class RequestsService {
       hospitalAddress: updateData.hospitalAddress,
       hospitalLatitude: updateData.hospitalLatitude,
       hospitalLongitude: updateData.hospitalLongitude,
-      requiredBy: updateData.requiredBy,
+      // requiredBy: updateData.requiredBy,
       notes: updateData.notes,
     });
 
