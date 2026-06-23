@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   ConflictException,
@@ -79,16 +80,20 @@ export class DonorsService {
   }
 
   async findByUserId(userId: string): Promise<Donor> {
-    const donor = await this.donorsRepository.findOne({
-      where: { userId },
-      relations: ['user'],
-    });
+    const donor = await this.findProfileByUserId(userId);
 
     if (!donor) {
       throw new NotFoundException('Donor profile not found');
     }
 
     return donor;
+  }
+
+  async findProfileByUserId(userId: string): Promise<Donor | null> {
+    return this.donorsRepository.findOne({
+      where: { userId },
+      relations: ['user'],
+    });
   }
 
   async update(id: string, updateData: UpdateDonorDto): Promise<Donor> {
@@ -104,6 +109,31 @@ export class DonorsService {
     const donor = await this.findByUserId(userId);
     Object.assign(donor, updateData);
     return this.donorsRepository.save(donor);
+  }
+
+  async upsertByUserId(
+    userId: string,
+    updateData: UpdateDonorDto,
+  ): Promise<Donor> {
+    const donor = await this.findProfileByUserId(userId);
+
+    if (donor) {
+      Object.assign(donor, updateData);
+      return this.donorsRepository.save(donor);
+    }
+
+    if (!updateData.bloodType) {
+      throw new BadRequestException(
+        'bloodType is required to create a donor profile',
+      );
+    }
+
+    const newDonor = this.donorsRepository.create({
+      ...updateData,
+      userId,
+    });
+
+    return this.donorsRepository.save(newDonor);
   }
 
   async updateAvailability(

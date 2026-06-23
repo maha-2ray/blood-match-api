@@ -52,14 +52,14 @@ export class DonorsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   getMyProfile(@Request() req: any) {
-    return this.donorsService.findByUserId(req.user.id);
+    return this.donorsService.findProfileByUserId(req.user.id);
   }
 
   @Patch('profile')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   updateMyProfile(@Request() req: any, @Body() updateData: UpdateDonorDto) {
-    return this.donorsService.updateByUserId(req.user.id, updateData);
+    return this.donorsService.upsertByUserId(req.user.id, updateData);
   }
 
   @Get('nearby')
