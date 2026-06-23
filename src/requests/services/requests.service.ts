@@ -103,6 +103,9 @@ export class RequestsService {
       hospitalLatitude: updateData.hospitalLatitude,
       hospitalLongitude: updateData.hospitalLongitude,
       notes: updateData.notes,
+      relationshipToPatient: updateData.relationshipToPatient,
+      contactNumber: updateData.contactNumber,
+      contactName: updateData.contactName,
     });
 
     if (!request) {

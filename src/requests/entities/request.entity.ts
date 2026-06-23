@@ -82,6 +82,15 @@ export class BloodRequest {
   @Column({ type: 'text', nullable: true })
   notes: string;
 
+  @Column({ nullable: true })
+  relationshipToPatient: string;
+
+  @Column({ nullable: true })
+  contactNumber: string;
+
+  @Column({ nullable: true })
+  contactName: string;
+
   @Column({ default: false })
   isUrgent: boolean;
 

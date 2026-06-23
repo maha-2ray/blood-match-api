@@ -35,25 +35,16 @@ export class DonorsController {
   }
 
   @Get()
-  @ApiQuery({ name: 'bloodType', enum: BloodType, required: false })
   @ApiQuery({
     name: 'availabilityStatus',
     enum: AvailabilityStatus,
     required: false,
   })
-  @ApiQuery({ name: 'city', required: false })
-  @ApiQuery({ name: 'country', required: false })
   findAll(
-    @Query('bloodType') bloodType?: BloodType,
     @Query('availabilityStatus') availabilityStatus?: AvailabilityStatus,
-    @Query('city') city?: string,
-    @Query('country') country?: string,
   ) {
     return this.donorsService.findAll({
-      bloodType,
       availabilityStatus,
-      city,
-      country,
     });
   }
 
